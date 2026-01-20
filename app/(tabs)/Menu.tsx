@@ -1,12 +1,13 @@
 import { View, Text, StyleSheet } from "react-native";
+import Header from "@/components/Header";
 
-export default function Header() {
+export default function Menu() {
   return (
-
-    <View style= {styles.header}>
-      <Text style={styles.headerText}>Ambiance</Text>
-      <Text style={styles.subHeaderText}>Fine Dining Experience</Text>
+    <View >
+        <Header></Header>
     </View>
+
+    
    
 
    
