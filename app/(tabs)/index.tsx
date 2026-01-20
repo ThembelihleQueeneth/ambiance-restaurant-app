@@ -1,9 +1,14 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ImageBackground } from "react-native";
+import Header from "../../components/Header";
 
 export default function HomeScreen() {
   return (
 
-    <View style= {styles.titleContainer}>Hello World</View>
+    <View style= {styles.titleContainer}>
+      <Header />
+      <ImageBackground source={require('../../assets/images/ambiance-gb.jpg')} style={styles.imageBackground}>
+      </ImageBackground>
+    </View>
    
   );
 }
@@ -14,9 +19,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  imageBackground: {
+    height:600,
+    
   },
   reactLogo: {
     height: 178,
