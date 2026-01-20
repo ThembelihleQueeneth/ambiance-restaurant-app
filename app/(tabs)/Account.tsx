@@ -1,10 +1,10 @@
-import { View, Text, StyleSheet } from "react-native";
-import Header from "@/components/Header";
+ import { View, Text, StyleSheet } from "react-native"; //Importing necessary components
+import Header from "@/components/Header"; //Importing Header Component
 
 export default function Account() {
   return (
     <View >
-        <Header></Header>
+       <Header></Header>  {/* Using Header Component */}
     </View>
 
     
