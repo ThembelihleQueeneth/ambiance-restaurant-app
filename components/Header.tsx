@@ -1,39 +1,39 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Dimensions } from "react-native";
+
+const { width } = Dimensions.get("window");
 
 export default function Header() {
   return (
-
-    <View style= {styles.header}>
-      <Text style={styles.headerText}>Ambiance</Text>
-      <Text style={styles.subHeaderText}>Fine Dining Experience</Text>
+    <View style={styles.headerWrapper}>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Ambiance</Text>
+        <Text style={styles.subHeaderText}>Fine Dining Experience</Text>
+      </View>
     </View>
-   
-
-   
   );
 }
 
 const styles = StyleSheet.create({
+  headerWrapper: {
+    overflow: "hidden",
+  },
   header: {
-   backgroundColor: '#FB8500' ,
-       color: '#ffffff',
-       justifyContent: 'center',
-       alignItems: 'center',
-       padding:10,
-       
-       
-
-
+    backgroundColor: "#FB8500",
+    width: width,
+    height: 100, 
+    justifyContent: "center",
+    alignItems: "center",
+    borderBottomLeftRadius: width / 1,
+    borderBottomRightRadius: width / 1,
   },
   headerText: {
-    color: '#ffffff',
-    fontSize:32,
-    fontWeight:'bold',
+    color: "#ffffff",
+    fontSize: 32,
+    fontWeight: "bold",
   },
   subHeaderText: {
-    color: '#ffffff',
-    fontSize:25,
-    fontWeight: '100'
-
+    color: "#ffffff",
+    fontSize: 20,
+    fontWeight: "300",
   },
 });

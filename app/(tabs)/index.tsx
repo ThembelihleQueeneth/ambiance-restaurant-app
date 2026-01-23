@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
   imageBackground: {
     
     height:250,
+    marginTop:-5
     
   },
   messageText1: {

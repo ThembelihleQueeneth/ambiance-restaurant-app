@@ -1,10 +1,16 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import Header from "@/components/Header";
+import SearchInput from "@/components/SearchInput";
+import FoodCategories  from "@/components/FoodCategories";
+import MenuItems from "@/components/MenuItems";
 
 export default function Menu() {
   return (
-    <View >
+    <View style={styles.container}>
         <Header></Header>
+        <SearchInput></SearchInput>
+        <FoodCategories></FoodCategories>
+        <MenuItems></MenuItems>
     </View>
 
     
@@ -15,26 +21,8 @@ export default function Menu() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-   backgroundColor: '#FB8500' ,
-       color: '#ffffff',
-       justifyContent: 'center',
-       alignItems: 'center',
-       padding:10,
-       
-       
-
-
-  },
-  headerText: {
-    color: '#ffffff',
-    fontSize:32,
-    fontWeight:'bold',
-  },
-  subHeaderText: {
-    color: '#ffffff',
-    fontSize:25,
-    fontWeight: '100'
-
-  },
+  container:{
+    backgroundColor:'#fff',
+    flex:1
+  }
 });
