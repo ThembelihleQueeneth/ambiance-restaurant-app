@@ -5,44 +5,75 @@ import {
   Text,
   Image,
   Pressable,
+  Alert,
 } from "react-native";
+import { useEffect, useState } from "react";
+import { useRouter } from "expo-router";
+import { onAuthStateChanged, User } from "firebase/auth";
+
 import Header from "../../components/Header";
+import { FIREBASE_AUTH } from "@/services/firebase/FirebaseConfig";
 
 export default function HomeScreen() {
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
+
+  // 🔐 Check authentication state
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  // 🧺 Allow everyone to add items to basket
+  const handleAddToBasket = (itemName: string) => {
+    // Later this will go to Basket Context / AsyncStorage
+    Alert.alert("Added to basket", `${itemName} has been added`);
+  };
+
   return (
     <View style={styles.titleContainer}>
       <Header />
 
+      {/* Hero Section */}
       <ImageBackground
         source={require("@/assets/images/ambiance-bg.jpg")}
         style={styles.imageBackground}
       >
-        {/* Dim overlay */}
         <View style={styles.overlay} />
 
         <Text style={styles.messageText1}>Welcome to Ambiance</Text>
-
         <Text style={styles.messageText2}>Modern | Fresh | Elegant</Text>
 
-        <Pressable style={styles.exploreButton}>
+        <Pressable
+          style={styles.exploreButton}
+          onPress={() => router.push("/(tabs)/Menu")}
+        >
           <Text style={styles.exploreButtonText}>Explore Menu</Text>
         </Pressable>
       </ImageBackground>
 
-      {/* Login prompt */}
-      <View style={styles.loginPrompt}>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.loginPromptText}>
-            Log in to enjoy faster ordering and special offers
-          </Text>
+      {/* Login prompt (hide if logged in) */}
+      {!user && (
+        <View style={styles.loginPrompt}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.loginPromptText}>
+              Log in to enjoy faster ordering and special offers
+            </Text>
+          </View>
+
+          <Pressable
+            style={styles.loginPromptBtn}
+            onPress={() => router.push("/(tabs)/Account")}
+          >
+            <Text style={styles.loginPromptTextBtn}>Log In</Text>
+          </Pressable>
         </View>
+      )}
 
-        <Pressable style={styles.loginPromptBtn}>
-          <Text style={styles.loginPromptTextBtn}>Log In</Text>
-        </Pressable>
-      </View>
-
-      {/* Popular dishes */}
+      {/* Popular Dishes */}
       <Text style={styles.popularDishesText}>
         <Text style={{ color: "#FB5800" }}>★</Text> Popular Dishes
       </Text>
@@ -58,7 +89,10 @@ export default function HomeScreen() {
 
           <View style={styles.priceRow}>
             <Text style={styles.itemPrice}>R59.99</Text>
-            <Pressable style={styles.addBtn}>
+            <Pressable
+              style={styles.addBtn}
+              onPress={() => handleAddToBasket("Chicken Livers")}
+            >
               <Text style={styles.addBtnText}>Add +</Text>
             </Pressable>
           </View>
@@ -74,7 +108,10 @@ export default function HomeScreen() {
 
           <View style={styles.priceRow}>
             <Text style={styles.itemPrice}>R59.99</Text>
-            <Pressable style={styles.addBtn}>
+            <Pressable
+              style={styles.addBtn}
+              onPress={() => handleAddToBasket("Pasta")}
+            >
               <Text style={styles.addBtnText}>Add +</Text>
             </Pressable>
           </View>
@@ -162,7 +199,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
-    
   },
 
   loginPromptTextBtn: {
