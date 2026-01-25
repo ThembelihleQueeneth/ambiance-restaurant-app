@@ -1,212 +1,235 @@
-import { View, StyleSheet, ImageBackground, Text, Image, Pressable } from "react-native";
+import {
+  View,
+  StyleSheet,
+  ImageBackground,
+  Text,
+  Image,
+  Pressable,
+} from "react-native";
 import Header from "../../components/Header";
 
 export default function HomeScreen() {
   return (
-
-    <View style= {styles.titleContainer}>
+    <View style={styles.titleContainer}>
       <Header />
-      <ImageBackground source={require('@/assets/images/ambiance-bg.jpg')} style={styles.imageBackground}>
-      <Text style= {styles.messageText1}>
-        Welcome to Ambiance
 
-      </Text>
-      <Text style={styles.messageText2}>
-        Modern | Fresh | Elegant
-      </Text>
-      <Pressable style={styles.exploreButton}>
-        <Text style={styles.exploreButtonText}>
-        Explore Menu
-        </Text></Pressable>
+      <ImageBackground
+        source={require("@/assets/images/ambiance-bg.jpg")}
+        style={styles.imageBackground}
+      >
+        {/* Dim overlay */}
+        <View style={styles.overlay} />
+
+        <Text style={styles.messageText1}>Welcome to Ambiance</Text>
+
+        <Text style={styles.messageText2}>Modern | Fresh | Elegant</Text>
+
+        <Pressable style={styles.exploreButton}>
+          <Text style={styles.exploreButtonText}>Explore Menu</Text>
+        </Pressable>
       </ImageBackground>
+
+      {/* Login prompt */}
       <View style={styles.loginPrompt}>
-        <View>
-        <Text style= {styles.loginPromptText}>Log in to enjoy faster ordering and special offers</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.loginPromptText}>
+            Log in to enjoy faster ordering and special offers
+          </Text>
         </View>
-        <View>
-          <Pressable style={styles.loginPromptBtn}>
-            <Text style={styles.loginPromptTextBtn}>Log In</Text>
-          </Pressable>
-        </View>
+
+        <Pressable style={styles.loginPromptBtn}>
+          <Text style={styles.loginPromptTextBtn}>Log In</Text>
+        </Pressable>
       </View>
 
-      <View>
-        <Text style={styles.popularDishesText}> <Text style={{color:'#FB5800'}}>★</Text> Popular Dishes</Text>
-      </View>
+      {/* Popular dishes */}
+      <Text style={styles.popularDishesText}>
+        <Text style={{ color: "#FB5800" }}>★</Text> Popular Dishes
+      </Text>
+
       <View style={styles.popularDishesContainer}>
+        {/* Dish 1 */}
         <View style={styles.popularDishCont}>
-          <Image source={require('@/assets/images/chicken-liver.jpg')} style={styles.popularDishImage}></Image>
+          <Image
+            source={require("@/assets/images/chicken-liver.jpg")}
+            style={styles.popularDishImage}
+          />
           <Text style={styles.itemName}>Chicken Livers</Text>
-          <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+
+          <View style={styles.priceRow}>
             <Text style={styles.itemPrice}>R59.99</Text>
             <Pressable style={styles.addBtn}>
               <Text style={styles.addBtnText}>Add +</Text>
             </Pressable>
           </View>
         </View>
+
+        {/* Dish 2 */}
         <View style={styles.popularDishCont}>
-          <Image source={require('@/assets/images/pasta.jpg')} style={styles.popularDishImage}></Image>
+          <Image
+            source={require("@/assets/images/pasta.jpg")}
+            style={styles.popularDishImage}
+          />
           <Text style={styles.itemName}>Pasta</Text>
-          <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+
+          <View style={styles.priceRow}>
             <Text style={styles.itemPrice}>R59.99</Text>
             <Pressable style={styles.addBtn}>
               <Text style={styles.addBtnText}>Add +</Text>
             </Pressable>
           </View>
         </View>
-
       </View>
-
-  </View>
-   
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   titleContainer: {
-    marginTop:60,
-    backgroundColor:'#fff',
-    flex:1
-    
-    
-    
+    marginTop: 60,
+    backgroundColor: "#fff",
+    flex: 1,
   },
+
   imageBackground: {
-    
-    height:250,
-    marginTop:-5
-    
+    height: 250,
+    marginTop: -5,
+    justifyContent: "center",
   },
+
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.45)",
+  },
+
   messageText1: {
-    color: '#fff',
-    fontSize:32,
-    fontWeight:'bold',
-    alignItems: 'center',
-    justifyContent:'center',
-    marginTop:50,
-    marginLeft:30
-    
+    color: "#fff",
+    fontSize: 32,
+    fontWeight: "bold",
+    marginLeft: 30,
   },
-  messageText2:{
-    color: '#fff',
-    fontSize:20,
-    fontWeight:'light',
-    alignItems: 'center',
-    justifyContent:'center',
-    marginLeft:90
 
+  messageText2: {
+    color: "#fff",
+    fontSize: 20,
+    marginLeft: 90,
+    marginBottom: 10,
   },
-  exploreButton:{
-    backgroundColor: '#FB8500',
-    width:200,
-    height:50,
-    justifyContent:'center',
-    alignItems:'center',
+
+  exploreButton: {
+    backgroundColor: "#FB8500",
+    width: 200,
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 20,
-    marginTop:10,
-    marginLeft:100
+    marginLeft: 100,
+    marginTop: 10,
+  },
 
+  exploreButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
   },
-  exploreButtonText:{
-    color: '#fff',
-    fontSize:18,
-    fontWeight:'bold',
-  },
-  loginPrompt:{
-    flexDirection:'row',
-    backgroundColor: '#fff',
-    width:300,
-    height:120,
-    marginLeft:50,
-    borderRadius:20,
-    justifyContent:'space-around',
-    alignContent:'center',
-    alignItems:'center',
-    padding:30,
-    marginTop:-40,
-    shadowColor: '#000',
-    shadowOffset: {width:0, height:2},
-    shadowOpacity:0.25,
+
+  loginPrompt: {
+    flexDirection: "row",
+    backgroundColor: "#fff",
+    width: 300,
+    height: 120,
+    alignSelf: "center",
+    borderRadius: 20,
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 20,
+    marginTop: -40,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation:5
-
-
-  },
-  loginPromptText:{
-    color: '#000',
-    fontSize:17,
-    lineHeight:25
-
-  },
-  loginPromptBtn:{
-    backgroundColor:'#FB8500',
-    padding:10,
-    marginLeft:-100,
-    marginBottom: -80,
-    borderRadius:10,
-
+    elevation: 5,
   },
 
-  loginPromptTextBtn:{
-    color: '#fff',
-    fontSize:20,
-    paddingHorizontal:20
-    
-
+  loginPromptText: {
+    color: "#000",
+    fontSize: 17,
+    lineHeight: 25,
   },
-  popularDishesText:{
-    fontSize:28,
-    fontWeight:'bold',
-    margin:10,
-    color:'orange'
+
+  loginPromptBtn: {
+    backgroundColor: "#FB8500",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
     
   },
-  popularDishesContainer :{
-   flexDirection: 'row',
-   justifyContent: 'space-between'
+
+  loginPromptTextBtn: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
   },
+
+  popularDishesText: {
+    fontSize: 28,
+    fontWeight: "bold",
+    margin: 10,
+    color: "orange",
+  },
+
+  popularDishesContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+  },
+
   popularDishCont: {
-    margin:20,
-    shadowColor: '#000',
-    shadowOffset: {width:0, height:2},
-    shadowOpacity:0.25,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation:5
-    
-
+    elevation: 5,
+    width: 170,
   },
-  popularDishImage:{
-    width:150,
-    height:100,
-    borderRadius:10,
-    justifyContent:'center',
-    alignContent:'center',
-    alignItems:'center',
 
+  popularDishImage: {
+    width: "100%",
+    height: 100,
+    borderRadius: 10,
   },
-  itemName:{
-    marginTop:5
 
+  itemName: {
+    marginTop: 5,
+    fontSize: 16,
+    fontWeight: "600",
   },
-  itemPrice:{
-    fontSize:20,
-    fontStyle:'italic',
-    fontWeight:'bold'
 
+  priceRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 5,
   },
-  addBtn:{
-    backgroundColor:'#FB8500',
-    padding:5,
-    borderRadius:5,
-    width:50,
-    height:35,
 
+  itemPrice: {
+    fontSize: 18,
+    fontStyle: "italic",
+    fontWeight: "bold",
   },
-  addBtnText:{
-    color:'#fff',
-    fontWeight:'bold',
-    padding:5
-    
 
-  }
+  addBtn: {
+    backgroundColor: "#FB8500",
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+
+  addBtnText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
 });
