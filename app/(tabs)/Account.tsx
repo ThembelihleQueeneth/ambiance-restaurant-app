@@ -1,17 +1,63 @@
-import { View, Text, StyleSheet, TextInput, Pressable, ScrollView } from "react-native";
-import Header from "@/components/Header";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Pressable,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
+import React, { useState } from "react";
 import { useRouter } from "expo-router";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
+import Header from "@/components/Header";
+import { FIREBASE_AUTH } from "@/services/firebase/FirebaseConfig";
 
 export default function Account() {
-
   const router = useRouter();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const signIn = async () => {
+    if (!email || !password) {
+      Alert.alert("Missing fields", "Please enter email and password");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await signInWithEmailAndPassword(
+        FIREBASE_AUTH,
+        email.trim(),
+        password
+      );
+
+      console.log("Logged in user:", response.user);
+
+      // Navigate after successful login
+      router.replace("/(tabs)");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      Alert.alert("Login failed", errorMessage);
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
       <Header />
 
-      <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Login Header */}
         <Text style={styles.loginTitle}>Log In</Text>
 
@@ -23,22 +69,26 @@ export default function Account() {
             placeholder="Enter email here"
             keyboardType="email-address"
             autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
           />
 
           <Text style={styles.label}>Password</Text>
           <TextInput
             style={styles.inputText}
             placeholder="Enter your password here"
-            secureTextEntry={true}
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
           />
 
-          <Pressable style={styles.forgotPasswordBtn}>
-            <Text style={styles.forgotPasswordText}>I forgot my password</Text>
-          </Pressable>
-
-          <Pressable style={styles.loginBtn}>
-            <Text style={styles.loginBtnText}>Log In</Text>
-          </Pressable>
+          {loading ? (
+            <ActivityIndicator size="large" color="#FB8500" />
+          ) : (
+            <Pressable style={styles.loginBtn} onPress={signIn}>
+              <Text style={styles.loginBtnText}>Log In</Text>
+            </Pressable>
+          )}
 
           <View style={styles.signUpContainer}>
             <Text style={styles.noAccountText}>Do not have an account?</Text>
@@ -50,21 +100,7 @@ export default function Account() {
       </ScrollView>
     </View>
   );
-};
-
-{/* 
-
-  Folder structure
-  app/tabs/index.tsx (Which is the Home Page),
-  app/tabs/Account.tsx (Which is the login),
-  app/tabs/Menu.tsx (Which is the Menu Page),
-  app/tabs/Basket.tsx (Which is the Cart ),  
-
-  I'm done with frontend of all the files, I'm left with register, when I click register I want to go to the register page how do I do that
-  
-  */}
-
-
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -102,15 +138,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9f9f9",
     color: "#1E1E1E",
   },
-  forgotPasswordBtn: {
-    alignSelf: "flex-end",
-    marginBottom: 30,
-  },
-  forgotPasswordText: {
-    color: "#FB8500",
-    fontSize: 14,
-    fontWeight: "500",
-  },
   loginBtn: {
     backgroundColor: "#FB8500",
     paddingVertical: 15,
@@ -137,5 +164,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-
-
