@@ -22,6 +22,7 @@ import {
 import { FIREBASE_DB, FIREBASE_STORAGE } from "@/services/firebase/FirebaseConfig";
 import * as ImagePicker from "expo-image-picker";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import Header from "@/components/Header";
 
 type MenuItem = {
   id: string;
@@ -173,6 +174,7 @@ export default function MenuManagement() {
 
   return (
     <View style={styles.container}>
+      <Header></Header>
       <Text style={styles.title}>Menu Management</Text>
 
       <Pressable style={styles.addButton} onPress={() => setModalVisible(true)}>
@@ -250,14 +252,14 @@ export default function MenuManagement() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
-  title: { fontSize: 28, fontWeight: "bold", marginBottom: 20 },
+  container: { flex: 1, backgroundColor: "#fff" },
+  title: { fontSize: 28, fontWeight: "bold", margin: 20 },
   addButton: {
     backgroundColor: "#FB8500",
     padding: 12,
     borderRadius: 10,
     alignItems: "center",
-    marginBottom: 15,
+    margin:30,
   },
   addButtonText: { color: "#fff", fontWeight: "bold" },
   itemContainer: {
