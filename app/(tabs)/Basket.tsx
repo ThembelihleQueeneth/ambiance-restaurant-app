@@ -1,5 +1,7 @@
 import Header from "@/components/Header";
 import { StyleSheet, Text, Image, View, Pressable, ScrollView } from "react-native";
+import Icon from 'react-native-vector-icons/FontAwesome';
+
 
 export default function Basket() {
   return (
@@ -28,6 +30,9 @@ export default function Basket() {
               <Pressable style={styles.quantityBtn}>
                 <Text style={styles.quantityText}>+</Text>
               </Pressable>
+              <Pressable style={styles.quantityBtn}>
+  <Icon name="trash" size={18} color="#fff" />
+</Pressable>
             </View>
 
             <Text style={styles.itemPrice}>R59.99</Text>
