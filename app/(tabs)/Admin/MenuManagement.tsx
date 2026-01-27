@@ -13,9 +13,7 @@ import {
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 
-// Update this with your local IP and backend port
-const API_BASE_URL = "http://192.168.1.112:5000/items"; // <-- replace with your IP
-
+const API_BASE_URL = "http://192.168.1.112:5000/items"; 
 type MenuItem = {
   id: string;
   name: string;

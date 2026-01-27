@@ -6,6 +6,8 @@ import {
   Image,
   Pressable,
   Alert,
+  FlatList,
+  ActivityIndicator,
 } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
@@ -14,12 +16,22 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import Header from "../../components/Header";
 import { FIREBASE_AUTH } from "@/services/firebase/FirebaseConfig";
 
+type MenuItem = {
+  id: string;
+  name: string;
+  price: string;
+  description?: string;
+  image_url: string; // URL from backend
+};
+
 export default function HomeScreen() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // 🔐 Check authentication state
   useEffect(() => {
+    // Firebase auth listener
     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (currentUser) => {
       setUser(currentUser);
     });
@@ -27,11 +39,34 @@ export default function HomeScreen() {
     return unsubscribe;
   }, []);
 
-  // 🧺 Allow everyone to add items to basket
+  useEffect(() => {
+    fetchMenuItems();
+  }, []);
+
+  const fetchMenuItems = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch("http://192.168.1.112:5000/items"); 
+      const data: MenuItem[] = await response.json();
+      setMenuItems(data);
+    } catch (error) {
+      Alert.alert("Error", "Failed to fetch menu items");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAddToBasket = (itemName: string) => {
-    // Later this will go to Basket Context / AsyncStorage
     Alert.alert("Added to basket", `${itemName} has been added`);
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#FB8500" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.titleContainer}>
@@ -43,7 +78,6 @@ export default function HomeScreen() {
         style={styles.imageBackground}
       >
         <View style={styles.overlay} />
-
         <Text style={styles.messageText1}>Welcome to Ambiance</Text>
         <Text style={styles.messageText2}>Modern | Fresh | Elegant</Text>
 
@@ -55,15 +89,11 @@ export default function HomeScreen() {
         </Pressable>
       </ImageBackground>
 
-      {/* Login prompt (hide if logged in) */}
       {!user && (
         <View style={styles.loginPrompt}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.loginPromptText}>
-              Log in to enjoy faster ordering and special offers
-            </Text>
-          </View>
-
+          <Text style={styles.loginPromptText}>
+            Log in to enjoy faster ordering and special offers
+          </Text>
           <Pressable
             style={styles.loginPromptBtn}
             onPress={() => router.push("/(tabs)/Account")}
@@ -73,50 +103,37 @@ export default function HomeScreen() {
         </View>
       )}
 
-      {/* Popular Dishes */}
+      {/* Popular Dishes from backend */}
       <Text style={styles.popularDishesText}>
         <Text style={{ color: "#FB5800" }}>★</Text> Popular Dishes
       </Text>
 
-      <View style={styles.popularDishesContainer}>
-        {/* Dish 1 */}
-        <View style={styles.popularDishCont}>
-          <Image
-            source={require("@/assets/images/chicken-liver.jpg")}
-            style={styles.popularDishImage}
-          />
-          <Text style={styles.itemName}>Chicken Livers</Text>
+      <FlatList
+        data={menuItems}
+        keyExtractor={(item) => item.id}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 10 }}
+        renderItem={({ item }) => (
+          <View style={styles.popularDishCont}>
+            <Image
+              source={{ uri: item.image_url }}
+              style={styles.popularDishImage}
+            />
+            <Text style={styles.itemName}>{item.name}</Text>
 
-          <View style={styles.priceRow}>
-            <Text style={styles.itemPrice}>R59.99</Text>
-            <Pressable
-              style={styles.addBtn}
-              onPress={() => handleAddToBasket("Chicken Livers")}
-            >
-              <Text style={styles.addBtnText}>Add +</Text>
-            </Pressable>
+            <View style={styles.priceRow}>
+              <Text style={styles.itemPrice}>R{item.price}</Text>
+              <Pressable
+                style={styles.addBtn}
+                onPress={() => handleAddToBasket(item.name)}
+              >
+                <Text style={styles.addBtnText}>Add +</Text>
+              </Pressable>
+            </View>
           </View>
-        </View>
-
-        {/* Dish 2 */}
-        <View style={styles.popularDishCont}>
-          <Image
-            source={require("@/assets/images/pasta.jpg")}
-            style={styles.popularDishImage}
-          />
-          <Text style={styles.itemName}>Pasta</Text>
-
-          <View style={styles.priceRow}>
-            <Text style={styles.itemPrice}>R59.99</Text>
-            <Pressable
-              style={styles.addBtn}
-              onPress={() => handleAddToBasket("Pasta")}
-            >
-              <Text style={styles.addBtnText}>Add +</Text>
-            </Pressable>
-          </View>
-        </View>
-      </View>
+        )}
+      />
     </View>
   );
 }
@@ -127,32 +144,27 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     flex: 1,
   },
-
   imageBackground: {
     height: 250,
     marginTop: -5,
     justifyContent: "center",
   },
-
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(0, 0, 0, 0.45)",
   },
-
   messageText1: {
     color: "#fff",
     fontSize: 32,
     fontWeight: "bold",
     marginLeft: 30,
   },
-
   messageText2: {
     color: "#fff",
     fontSize: 20,
     marginLeft: 90,
     marginBottom: 10,
   },
-
   exploreButton: {
     backgroundColor: "#FB8500",
     width: 200,
@@ -163,13 +175,11 @@ const styles = StyleSheet.create({
     marginLeft: 100,
     marginTop: 10,
   },
-
   exploreButtonText: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
   },
-
   loginPrompt: {
     flexDirection: "row",
     backgroundColor: "#fff",
@@ -187,39 +197,29 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-
   loginPromptText: {
     color: "#000",
     fontSize: 17,
     lineHeight: 25,
+    flex: 1,
   },
-
   loginPromptBtn: {
     backgroundColor: "#FB8500",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
   },
-
   loginPromptTextBtn: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
   },
-
   popularDishesText: {
     fontSize: 28,
     fontWeight: "bold",
     margin: 10,
     color: "orange",
   },
-
-  popularDishesContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 10,
-  },
-
   popularDishCont: {
     backgroundColor: "#fff",
     borderRadius: 10,
@@ -230,42 +230,42 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     width: 170,
+    marginRight: 10,
   },
-
   popularDishImage: {
     width: "100%",
     height: 100,
     borderRadius: 10,
   },
-
   itemName: {
     marginTop: 5,
     fontSize: 16,
     fontWeight: "600",
   },
-
   priceRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginTop: 5,
   },
-
   itemPrice: {
     fontSize: 18,
     fontStyle: "italic",
     fontWeight: "bold",
   },
-
   addBtn: {
     backgroundColor: "#FB8500",
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 5,
   },
-
   addBtnText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
