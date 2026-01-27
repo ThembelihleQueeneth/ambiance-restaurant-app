@@ -11,24 +11,16 @@ import {
   Image,
 } from "react-native";
 import { useEffect, useState } from "react";
-import {
-  collection,
-  getDocs,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-} from "firebase/firestore";
-import { FIREBASE_DB, FIREBASE_STORAGE } from "@/services/firebase/FirebaseConfig";
-import * as ImagePicker from "expo-image-picker";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Header from "@/components/Header";
+
+// Update this with your local IP and backend port
+const API_BASE_URL = "http://192.168.1.112:5000/items"; // <-- replace with your IP
 
 type MenuItem = {
   id: string;
   name: string;
   price: string;
-  imageUrl: string;
+  image_url: string;
   description?: string;
 };
 
@@ -45,23 +37,18 @@ export default function MenuManagement() {
   const [price, setPrice] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [description, setDescription] = useState("");
-  const [uploading, setUploading] = useState(false);
 
-  const menuCollectionRef = collection(FIREBASE_DB, "menuItems");
-
-  // Fetch menu items from Firestore
+  // Fetch items from backend
   const fetchMenuItems = async () => {
     setLoading(true);
     try {
-      const snapshot = await getDocs(menuCollectionRef);
-      const items = snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() } as MenuItem)
-      );
-      setMenuItems(items);
+      const res = await fetch(API_BASE_URL);
+      const data = await res.json();
+      setMenuItems(data);
     } catch (error) {
       Alert.alert(
         "Error",
-        error instanceof Error ? error.message : "An unknown error occurred"
+        error instanceof Error ? error.message : "Failed to fetch items"
       );
     } finally {
       setLoading(false);
@@ -72,77 +59,68 @@ export default function MenuManagement() {
     fetchMenuItems();
   }, []);
 
-  // Image Picker
-  const pickImage = async () => {
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted) {
-      Alert.alert("Permission Denied", "We need access to your photos to upload.");
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 0.7,
-    });
-
-    if (!result.canceled) {
-      // Upload image to Firebase Storage
-      const uri = result.assets[0].uri;
-      const filename = uri.split("/").pop();
-      const storageRef = ref(FIREBASE_STORAGE, `menuImages/${filename}`);
-      setUploading(true);
-      try {
-        const img = await fetch(uri);
-        const bytes = await img.blob();
-        await uploadBytes(storageRef, bytes);
-        const downloadURL = await getDownloadURL(storageRef);
-        setImageUrl(downloadURL);
-      } catch (error) {
-        Alert.alert("Upload Error", error instanceof Error ? error.message : "Failed to upload");
-      } finally {
-        setUploading(false);
-      }
-    }
-  };
-
-  // Add or Edit menu item
+  // Save new item or update existing
   const handleSave = async () => {
     if (!name || !price || !imageUrl) {
-      Alert.alert("Validation", "Please fill in Name, Price, and pick an Image");
+      Alert.alert("Validation", "Please fill in Name, Price, and Image URL");
       return;
     }
 
     try {
-      if (editingItem) {
-        const docRef = doc(FIREBASE_DB, "menuItems", editingItem.id);
-        await updateDoc(docRef, { name, price, imageUrl, description });
-        Alert.alert("Success", "Menu item updated!");
-      } else {
-        await addDoc(menuCollectionRef, { name, price, imageUrl, description });
-        Alert.alert("Success", "Menu item added!");
+      const method = editingItem ? "PUT" : "POST";
+      const url = editingItem
+        ? `${API_BASE_URL}/${editingItem.id}`
+        : API_BASE_URL;
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          price,
+          description,
+          image_url: imageUrl,
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed to save item");
       }
+
       setModalVisible(false);
       resetForm();
       fetchMenuItems();
+      Alert.alert("Success", editingItem ? "Item updated" : "Item added");
     } catch (error) {
       Alert.alert(
         "Error",
-        error instanceof Error ? error.message : "An unknown error occurred"
+        error instanceof Error ? error.message : "Failed to save item"
       );
     }
   };
 
-  // Delete menu item
+  // Delete item
   const handleDelete = async (id: string) => {
-    Alert.alert("Confirm Delete", "Are you sure you want to delete this item?", [
+    Alert.alert("Confirm Delete", "Are you sure?", [
       { text: "Cancel" },
       {
         text: "Delete",
-        onPress: async () => {
-          await deleteDoc(doc(FIREBASE_DB, "menuItems", id));
-          fetchMenuItems();
-        },
         style: "destructive",
+        onPress: async () => {
+          try {
+            const res = await fetch(`${API_BASE_URL}/${id}`, {
+              method: "DELETE",
+            });
+            if (!res.ok) throw new Error("Failed to delete item");
+            fetchMenuItems();
+          } catch (error) {
+            Alert.alert(
+              "Error",
+              error instanceof Error ? error.message : "Failed to delete"
+            );
+          }
+        },
       },
     ]);
   };
@@ -159,7 +137,7 @@ export default function MenuManagement() {
     setEditingItem(item);
     setName(item.name);
     setPrice(item.price);
-    setImageUrl(item.imageUrl);
+    setImageUrl(item.image_url);
     setDescription(item.description || "");
     setModalVisible(true);
   };
@@ -174,7 +152,7 @@ export default function MenuManagement() {
 
   return (
     <View style={styles.container}>
-      <Header></Header>
+      <Header />
       <Text style={styles.title}>Menu Management</Text>
 
       <Pressable style={styles.addButton} onPress={() => setModalVisible(true)}>
@@ -186,10 +164,12 @@ export default function MenuManagement() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.itemContainer}>
-            <Image
-              source={{ uri: item.imageUrl }}
-              style={{ width: "100%", height: 100, borderRadius: 8, marginBottom: 5 }}
-            />
+            {item.image_url ? (
+              <Image
+                source={{ uri: item.image_url }}
+                style={{ width: "100%", height: 100, borderRadius: 8, marginBottom: 5 }}
+              />
+            ) : null}
             <Text style={styles.itemName}>{item.name}</Text>
             <Text style={styles.itemPrice}>R{item.price}</Text>
             <View style={styles.itemButtons}>
@@ -205,12 +185,19 @@ export default function MenuManagement() {
       />
 
       {/* Modal for Add/Edit */}
-      <Modal visible={modalVisible} animationType="slide" transparent={true}>
+      <Modal visible={modalVisible} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>{editingItem ? "Edit Item" : "Add Item"}</Text>
+            <Text style={styles.modalTitle}>
+              {editingItem ? "Edit Item" : "Add Item"}
+            </Text>
 
-            <TextInput style={styles.input} placeholder="Name" value={name} onChangeText={setName} />
+            <TextInput
+              style={styles.input}
+              placeholder="Name"
+              value={name}
+              onChangeText={setName}
+            />
             <TextInput
               style={styles.input}
               placeholder="Price"
@@ -218,13 +205,12 @@ export default function MenuManagement() {
               value={price}
               onChangeText={setPrice}
             />
-            <Pressable style={styles.imagePickerBtn} onPress={pickImage}>
-              <Text style={styles.imagePickerBtnText}>
-                {uploading ? "Uploading..." : imageUrl ? "Change Image" : "Pick Image"}
-              </Text>
-            </Pressable>
-            {imageUrl ? <Image source={{ uri: imageUrl }} style={{ width: "100%", height: 100, marginTop: 5 }} /> : null}
-
+            <TextInput
+              style={styles.input}
+              placeholder="Image URL"
+              value={imageUrl}
+              onChangeText={setImageUrl}
+            />
             <TextInput
               style={styles.input}
               placeholder="Description (optional)"
@@ -259,7 +245,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 10,
     alignItems: "center",
-    margin:30,
+    margin: 30,
   },
   addButtonText: { color: "#fff", fontWeight: "bold" },
   itemContainer: {
@@ -305,14 +291,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 10,
   },
-  imagePickerBtn: {
-    backgroundColor: "#FB8500",
-    padding: 12,
-    borderRadius: 10,
-    alignItems: "center",
-    marginBottom: 5,
-  },
-  imagePickerBtnText: { color: "#fff", fontWeight: "bold" },
   saveBtn: {
     backgroundColor: "#FB8500",
     padding: 12,
