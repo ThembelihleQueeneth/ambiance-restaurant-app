@@ -15,6 +15,23 @@ router.get("/", async (_req: Request, res: Response) => {
   }
 });
 
+// GET /items/:id
+router.get("/:id", async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      "SELECT * FROM items WHERE id = $1",
+      [id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Item not found" });
+    }
+    res.json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch item" });
+  }
+});
+
 // POST /items
 router.post("/", async (req: Request, res: Response) => {
   const { name, price, description, image_url } = req.body;
