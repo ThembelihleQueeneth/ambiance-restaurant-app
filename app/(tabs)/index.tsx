@@ -21,7 +21,7 @@ type MenuItem = {
   name: string;
   price: string;
   description?: string;
-  image_url: string; // URL from backend
+  image_url: string; 
 };
 
 export default function HomeScreen() {
