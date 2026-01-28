@@ -16,7 +16,7 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import Header from "../../components/Header";
 import { FIREBASE_AUTH } from "@/services/firebase/FirebaseConfig";
 
-/* ✅ FIXED TYPES */
+/* ✅ TYPES */
 type MenuItem = {
   id: number;
   name: string;
@@ -58,15 +58,42 @@ export default function HomeScreen() {
       const data: MenuItem[] = await response.json();
       setMenuItems(data);
     } catch (error) {
-      console.error("Fetch error:", error);
+      console.error(error);
       Alert.alert("Error", "Unable to load menu items");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleAddToBasket = (itemName: string) => {
-    Alert.alert("Added to basket", `${itemName} has been added`);
+  /* 🛒 ADD TO CART */
+  const handleAddToBasket = async (item: MenuItem) => {
+    if (!user) {
+      Alert.alert("Login required", "Please log in to add items");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://192.168.1.112:5000/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: user.uid,
+          item_id: item.id,
+          name: item.name,
+          price: item.price,
+          image_url: item.image_url,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to add item");
+      }
+
+      Alert.alert("Added to Basket", `${item.name} added successfully`);
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "Could not add item to basket");
+    }
   };
 
   /* ⏳ Loading State */
@@ -138,7 +165,7 @@ export default function HomeScreen() {
               <Text style={styles.itemPrice}>R{item.price}</Text>
               <Pressable
                 style={styles.addBtn}
-                onPress={() => handleAddToBasket(item.name)}
+                onPress={() => handleAddToBasket(item)}
               >
                 <Text style={styles.addBtnText}>Add +</Text>
               </Pressable>

@@ -14,9 +14,11 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 
 import Header from "@/components/Header";
 import { FIREBASE_AUTH } from "@/services/firebase/FirebaseConfig";
+import { useAuthStore } from "@/src/store/AuthStore";
 
 export default function Account() {
   const router = useRouter();
+  const setUser = useAuthStore((state) => state.setUser); // ← get setter
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -39,10 +41,14 @@ export default function Account() {
 
       console.log("Logged in user:", response.user);
 
+      // ← store user in Zustand
+      setUser(response.user);
+
       // Navigate after successful login
       router.replace("/(tabs)");
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "An unknown error occurred";
+      const errorMessage =
+        error instanceof Error ? error.message : "An unknown error occurred";
       Alert.alert("Login failed", errorMessage);
       console.error(error);
     } finally {
@@ -58,10 +64,8 @@ export default function Account() {
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
-        {/* Login Header */}
         <Text style={styles.loginTitle}>Log In</Text>
 
-        {/* Form Container */}
         <View style={styles.formContainer}>
           <Text style={styles.label}>Email Address</Text>
           <TextInput
@@ -101,6 +105,7 @@ export default function Account() {
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

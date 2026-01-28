@@ -10,7 +10,7 @@ import {
 import { useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { FIREBASE_AUTH } from "@/services/firebase/FirebaseConfig";
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/CartContext"
 
 type CartItem = {
   id: number;
@@ -19,6 +19,80 @@ type CartItem = {
   image_url: string;
   quantity: number;
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  itemsContainer: {
+    padding: 16,
+    gap: 12,
+  },
+  itemCard: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 12,
+    gap: 12,
+  },
+  itemDetails: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  itemName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  quantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  quantityBtn: {
+    backgroundColor: '#ff6b6b',
+    width: 32,
+    height: 32,
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quantityText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  quantityNumber: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginHorizontal: 8,
+  },
+  itemPrice: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  itemImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+  },
+  totalPriceContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#ddd',
+  },
+  totalText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  totalAmount: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#ff6b6b',
+  },
+});
 
 export default function Basket() {
   const user = FIREBASE_AUTH.currentUser;
@@ -127,3 +201,19 @@ export default function Basket() {
     </View>
   );
 }
+<Pressable
+  style={{
+    backgroundColor: '#ff6b6b',
+    padding: 16,
+    margin: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  }}
+  onPress={() => {
+    // Handle checkout
+  }}
+>
+  <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>
+    Proceed to Checkout
+  </Text>
+</Pressable>

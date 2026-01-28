@@ -3,10 +3,10 @@ import { pool } from "../db";
 
 const router = Router();
 
-/**
- * GET /cart/:userId
- * Fetch all cart items for a user
- */
+
+  // GET /cart/:userId
+  // Fetch all cart items for a user
+ 
 router.get("/:userId", async (req: Request, res: Response) => {
   const { userId } = req.params;
 
@@ -22,10 +22,10 @@ router.get("/:userId", async (req: Request, res: Response) => {
   }
 });
 
-/**
- * POST /cart
- * Add item to cart (or increment if exists)
- */
+
+  // POST /cart
+  // Add item to cart (or increment if exists)
+ 
 router.post("/", async (req: Request, res: Response) => {
   const { user_id, item_id, name, price, image_url } = req.body;
 
@@ -66,10 +66,10 @@ router.post("/", async (req: Request, res: Response) => {
   }
 });
 
-/**
- * PUT /cart/:id
- * Update quantity
- */
+
+  // PUT /cart/:id
+  // Update quantity
+ 
 router.put("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
   const { quantity } = req.body;
@@ -97,10 +97,10 @@ router.put("/:id", async (req: Request, res: Response) => {
   }
 });
 
-/**
- * DELETE /cart/:id
- * Remove item from cart
- */
+
+  // DELETE /cart/:id
+  // Remove item from cart
+ 
 router.delete("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
 
