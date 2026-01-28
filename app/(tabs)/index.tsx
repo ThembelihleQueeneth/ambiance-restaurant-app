@@ -16,12 +16,13 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import Header from "../../components/Header";
 import { FIREBASE_AUTH } from "@/services/firebase/FirebaseConfig";
 
+/* ✅ FIXED TYPES */
 type MenuItem = {
-  id: string;
+  id: number;
   name: string;
-  price: string;
+  price: number;
   description?: string;
-  image_url: string; 
+  image_url: string;
 };
 
 export default function HomeScreen() {
@@ -30,8 +31,8 @@ export default function HomeScreen() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
 
+  /* 🔐 Firebase Auth Listener */
   useEffect(() => {
-    // Firebase auth listener
     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (currentUser) => {
       setUser(currentUser);
     });
@@ -39,6 +40,7 @@ export default function HomeScreen() {
     return unsubscribe;
   }, []);
 
+  /* 📡 Fetch Menu Items */
   useEffect(() => {
     fetchMenuItems();
   }, []);
@@ -46,11 +48,18 @@ export default function HomeScreen() {
   const fetchMenuItems = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://192.168.1.112:5000/items"); 
+
+      const response = await fetch("http://192.168.1.112:5000/items");
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch menu items");
+      }
+
       const data: MenuItem[] = await response.json();
       setMenuItems(data);
     } catch (error) {
-      Alert.alert("Error", "Failed to fetch menu items");
+      console.error("Fetch error:", error);
+      Alert.alert("Error", "Unable to load menu items");
     } finally {
       setLoading(false);
     }
@@ -60,6 +69,7 @@ export default function HomeScreen() {
     Alert.alert("Added to basket", `${itemName} has been added`);
   };
 
+  /* ⏳ Loading State */
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -72,7 +82,7 @@ export default function HomeScreen() {
     <View style={styles.titleContainer}>
       <Header />
 
-      {/* Hero Section */}
+      {/* 🖼 Hero Section */}
       <ImageBackground
         source={require("@/assets/images/ambiance-bg.jpg")}
         style={styles.imageBackground}
@@ -89,6 +99,7 @@ export default function HomeScreen() {
         </Pressable>
       </ImageBackground>
 
+      {/* 🔐 Login Prompt */}
       {!user && (
         <View style={styles.loginPrompt}>
           <Text style={styles.loginPromptText}>
@@ -103,14 +114,14 @@ export default function HomeScreen() {
         </View>
       )}
 
-      {/* Popular Dishes from backend */}
+      {/* 🍽 Popular Dishes */}
       <Text style={styles.popularDishesText}>
         <Text style={{ color: "#FB5800" }}>★</Text> Popular Dishes
       </Text>
 
       <FlatList
         data={menuItems}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 10 }}
@@ -120,6 +131,7 @@ export default function HomeScreen() {
               source={{ uri: item.image_url }}
               style={styles.popularDishImage}
             />
+
             <Text style={styles.itemName}>{item.name}</Text>
 
             <View style={styles.priceRow}>
@@ -138,6 +150,7 @@ export default function HomeScreen() {
   );
 }
 
+/* 🎨 Styles */
 const styles = StyleSheet.create({
   titleContainer: {
     marginTop: 60,
@@ -191,10 +204,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
     marginTop: -40,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
     elevation: 5,
   },
   loginPromptText: {
@@ -224,13 +233,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 10,
     padding: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
     width: 170,
     marginRight: 10,
+    elevation: 5,
   },
   popularDishImage: {
     width: "100%",
@@ -250,7 +255,6 @@ const styles = StyleSheet.create({
   },
   itemPrice: {
     fontSize: 18,
-    fontStyle: "italic",
     fontWeight: "bold",
   },
   addBtn: {

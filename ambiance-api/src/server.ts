@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import itemsRoutes from "./routes/items";
+import cartRoutes from "./routes/cart";
+
 
 const app = express();
 
@@ -12,6 +14,8 @@ app.get("/", (_req, res) => {
 });
 
 app.use("/items", itemsRoutes);
+app.use("/cart", cartRoutes);
+
 
 const PORT = 5000;
 app.listen(PORT, () => {
