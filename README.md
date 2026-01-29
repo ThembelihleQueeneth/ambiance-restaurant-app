@@ -1,50 +1,121 @@
-# Welcome to your Expo app 👋
+# 🍽️ Ambiance – Mobile Restaurant App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Ambiance is a modern restaurant mobile application built with **React Native** and **TypeScript**, allowing users to browse menu items, add items to a basket, and place orders. It features a clean UI and a scalable backend architecture.
 
-## Get started
+![Home](https://github.com/user-attachments/assets/318fa95d-b7b7-4821-b773-3fe1bb6702dc)
+----
+##  Tech Stack
 
-1. Install dependencies
+### Frontend
 
-   ```bash
-   npm install
-   ```
+* **React Native (Expo)**
+* **TypeScript**
+* **Zustand** – global state management (basket)
+* **Expo Router**
 
-2. Start the app
+### Backend
 
-   ```bash
-   npx expo start
-   ```
+* **Node.js + Express (TypeScript)**
+* **PostgreSQL** – menu & data storage
+* **Firebase Authentication** – user auth only
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Design (Figma)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+ **Figma Design Link:**
+`https://www.figma.com/design/21salA7BmFlGJ7viySJVKC/Ambiance-Restaurant?node-id=0-1&p=f&t=WMlNQUj37CmvuEHC-0`
 
-## Get a fresh project
+---
 
-When you're ready, run:
+## 📱 Features
+
+* Browse restaurant menu
+* Add / remove items from basket
+* Basket quantity increment & decrement
+* Real-time basket total
+* Firebase authentication
+* Admin-ready backend API
+
+---
+
+## 🛠️ Installation & Setup
+
+### 1️⃣ Clone the repository
 
 ```bash
-npm run reset-project
+git clone https://github.com/ThembelihleQueeneth/ambiance-restaurant-app.git
+cd ambiance-resturant-app
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+### 2️⃣ Frontend Setup (Expo App)
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+cd app
+npm install
+npx expo start
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Run on:
 
-## Join the community
+*  Expo Go (Android / iOS)
 
-Join our community of developers creating universal apps.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+
+### 3️⃣ Backend Setup (Node + PostgreSQL)
+
+```bash
+cd ambiance-api
+npm install
+npm run dev
+```
+
+Make sure PostgreSQL is running and `.env` is configured:
+
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/ambiance_db
+PORT=5000
+```
+
+---
+
+##  Key Dependencies
+
+### Frontend
+
+* `expo`
+* `react-native`
+* `zustand`
+* `firebase`
+* `expo-router`
+
+### Backend
+
+* `express`
+* `pg`
+* `cors`
+* `dotenv`
+* `typescript`
+* `ts-node-dev`
+
+---
+
+##  Screenshots
+
+![Home](https://github.com/user-attachments/assets/26ab923f-e124-47d7-b6b5-f75f4de635f1)
+
+---
+## Admin Dashboard Github Link
+*`https://github.com/ThembelihleQueeneth/ambiance_cms.git`
+
+## 👤 Author
+
+**Thembelihle Maluka**
+
+---
+
+
+Just tell me 👍
