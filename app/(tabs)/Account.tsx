@@ -11,8 +11,6 @@ import {
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import Register from "../Screens/Register";
-
 import Header from "@/components/Header";
 import { FIREBASE_AUTH } from "@/services/firebase/FirebaseConfig";
 import { useAuthStore } from "@/src/store/AuthStore";

@@ -210,10 +210,13 @@ export default function Basket() {
     alignItems: 'center',
   }}
   onPress={() => {
-    // Handle checkout
+    
   }}
 >
   <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>
     Proceed to Checkout
   </Text>
+  <Pressable onPress={() => router.push('../Screens/Checkout')}>
+                <Text style={styles.}> Checkout</Text>
+              </Pressable>
 </Pressable>
