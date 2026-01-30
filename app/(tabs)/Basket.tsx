@@ -10,7 +10,8 @@ import {
 import { useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { FIREBASE_AUTH } from "@/services/firebase/FirebaseConfig";
-import { useCart } from "@/context/CartContext"
+import { useCart } from "@/context/CartContext";
+import { useRouter } from "expo-router";
 
 type CartItem = {
   id: number;
@@ -20,83 +21,11 @@ type CartItem = {
   quantity: number;
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  itemsContainer: {
-    padding: 16,
-    gap: 12,
-  },
-  itemCard: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 12,
-    gap: 12,
-  },
-  itemDetails: {
-    flex: 1,
-    justifyContent: 'space-between',
-  },
-  itemName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  quantityContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  quantityBtn: {
-    backgroundColor: '#ff6b6b',
-    width: 32,
-    height: 32,
-    borderRadius: 4,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  quantityText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  quantityNumber: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginHorizontal: 8,
-  },
-  itemPrice: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  itemImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 8,
-  },
-  totalPriceContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#ddd',
-  },
-  totalText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  totalAmount: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#ff6b6b',
-  },
-});
-
 export default function Basket() {
   const user = FIREBASE_AUTH.currentUser;
   const { setCount } = useCart();
+  const router = useRouter();
+
   const [items, setItems] = useState<CartItem[]>([]);
 
   useEffect(() => {
@@ -194,29 +123,111 @@ export default function Basket() {
         ))}
       </ScrollView>
 
+      {/* Total */}
       <View style={styles.totalPriceContainer}>
         <Text style={styles.totalText}>Total:</Text>
         <Text style={styles.totalAmount}>R{total}</Text>
       </View>
+
+      {/* Checkout Button */}
+      <Pressable
+        style={checkoutStyles.checkoutBtn}
+        onPress={() => router.push("/Screens/Checkout")}
+      >
+        <Text style={checkoutStyles.checkoutText}>
+          Proceed to Checkout
+        </Text>
+      </Pressable>
     </View>
   );
 }
-<Pressable
-  style={{
-    backgroundColor: '#ff6b6b',
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  itemsContainer: {
+    padding: 16,
+    gap: 12,
+  },
+  itemCard: {
+    flexDirection: "row",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 12,
+    gap: 12,
+    elevation: 2,
+  },
+  itemDetails: {
+    flex: 1,
+    justifyContent: "space-between",
+  },
+  itemName: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  quantityContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  quantityBtn: {
+    backgroundColor: "#ff6b6b",
+    width: 32,
+    height: 32,
+    borderRadius: 6,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  quantityText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  quantityNumber: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  itemPrice: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  itemImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 10,
+  },
+  totalPriceContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#ddd",
+  },
+  totalText: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  totalAmount: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#ff6b6b",
+  },
+});
+
+const checkoutStyles = StyleSheet.create({
+  checkoutBtn: {
+    backgroundColor: "#ff6b6b",
     padding: 16,
     margin: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-  }}
-  onPress={() => {
-    
-  }}
->
-  <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>
-    Proceed to Checkout
-  </Text>
-  <Pressable onPress={() => router.push('../Screens/Checkout')}>
-                <Text style={styles.}> Checkout</Text>
-              </Pressable>
-</Pressable>
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  checkoutText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+});
