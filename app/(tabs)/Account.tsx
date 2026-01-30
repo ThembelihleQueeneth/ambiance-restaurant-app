@@ -11,6 +11,7 @@ import {
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import Register from "../Screens/Register";
 
 import Header from "@/components/Header";
 import { FIREBASE_AUTH } from "@/services/firebase/FirebaseConfig";
@@ -96,7 +97,7 @@ export default function Account() {
 
           <View style={styles.signUpContainer}>
             <Text style={styles.noAccountText}>Do not have an account?</Text>
-            <Pressable onPress={() => router.push("/(tabs)/Register")}>
+            <Pressable onPress={() => router.push('../Screens/Register')}>
               <Text style={styles.signUpText}> Sign Up</Text>
             </Pressable>
           </View>

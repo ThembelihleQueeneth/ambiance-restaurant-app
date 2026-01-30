@@ -34,20 +34,20 @@ router.get("/:id", async (req: Request, res: Response) => {
 
 // POST /items
 router.post("/", async (req: Request, res: Response) => {
-  const { name, price, description, image_url } = req.body;
+  const { name, price, description, image_url, category } = req.body;
 
-  if (!name || !price || !image_url) {
+  if (!name || !price || !image_url || !category) {
     return res.status(400).json({
-      error: "name, price and image_url are required",
+      error: "name, price, image_url and category are required",
     });
   }
 
   try {
     const result = await pool.query(
-      `INSERT INTO items (name, price, description, image_url)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO items (name, price, description, image_url, category)
+       VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
-      [name, price, description, image_url]
+      [name, price, description, image_url, category]
     );
 
     res.status(201).json(result.rows[0]);
@@ -59,7 +59,7 @@ router.post("/", async (req: Request, res: Response) => {
 // PUT /items/:id
 router.put("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { name, price, description, image_url } = req.body;
+  const { name, price, description, image_url, category } = req.body;
 
   try {
     const result = await pool.query(
@@ -67,10 +67,11 @@ router.put("/:id", async (req: Request, res: Response) => {
        SET name = $1,
            price = $2,
            description = $3,
-           image_url = $4
-       WHERE id = $5
+           image_url = $4,
+           category = $5
+       WHERE id = $6
        RETURNING *`,
-      [name, price, description, image_url, id]
+      [name, price, description, image_url, category, id]
     );
 
     if (result.rowCount === 0) {

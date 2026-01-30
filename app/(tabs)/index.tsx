@@ -15,10 +15,12 @@ import { onAuthStateChanged, User } from "firebase/auth";
 
 import Header from "../../components/Header";
 import { FIREBASE_AUTH } from "@/services/firebase/FirebaseConfig";
+import { useAuthStore } from "@/src/store/AuthStore";
+import { useCartStore} from "@/src/store/CartStore";
 
-/* ✅ TYPES */
+/* TYPES */
 type MenuItem = {
-  id: number;
+  id: string;
   name: string;
   price: number;
   description?: string;
@@ -27,20 +29,27 @@ type MenuItem = {
 
 export default function HomeScreen() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+
+  //  Zustand auth
+  const user = useAuthStore((state) => state.user);
+  const setUser = useAuthStore((state) => state.setUser);
+
+  //  Zustand cart
+  const addToCart = useCartStore((state) => state.addToCart);
+
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  /* 🔐 Firebase Auth Listener */
+  /* Listen to Firebase auth changes */
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (currentUser) => {
-      setUser(currentUser);
+      setUser(currentUser); // store globally in Zustand
     });
 
     return unsubscribe;
   }, []);
 
-  /* 📡 Fetch Menu Items */
+  /* Fetch menu items from backend */
   useEffect(() => {
     fetchMenuItems();
   }, []);
@@ -49,7 +58,7 @@ export default function HomeScreen() {
     try {
       setLoading(true);
 
-      const response = await fetch("http://192.168.1.112:5000/items");
+      const response = await fetch("http://192.168.1.111:5000/items");
 
       if (!response.ok) {
         throw new Error("Failed to fetch menu items");
@@ -65,38 +74,24 @@ export default function HomeScreen() {
     }
   };
 
-  /* 🛒 ADD TO CART */
-  const handleAddToBasket = async (item: MenuItem) => {
+  /*  ADD TO CART */
+  const handleAddToBasket = (item: MenuItem) => {
     if (!user) {
       Alert.alert("Login required", "Please log in to add items");
       return;
     }
 
-    try {
-      const res = await fetch("http://192.168.1.112:5000/cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_id: user.uid,
-          item_id: item.id,
-          name: item.name,
-          price: item.price,
-          image_url: item.image_url,
-        }),
-      });
+    addToCart({
+      id: item.id.toString(),
+      name: item.name,
+      price: item.price,
+      image_url: item.image_url.toString(),
+      quantity: 1,
+    });
 
-      if (!res.ok) {
-        throw new Error("Failed to add item");
-      }
-
-      Alert.alert("Added to Basket", `${item.name} added successfully`);
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Error", "Could not add item to basket");
-    }
+    Alert.alert("Added to Basket", `${item.name} added successfully`);
   };
 
-  /* ⏳ Loading State */
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -107,13 +102,12 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.titleContainer}>
-      <Header />
-
-      {/* 🖼 Hero Section */}
+      {/* Hero Section */}
       <ImageBackground
         source={require("@/assets/images/ambiance-bg.jpg")}
         style={styles.imageBackground}
       >
+        <Header />
         <View style={styles.overlay} />
         <Text style={styles.messageText1}>Welcome to Ambiance</Text>
         <Text style={styles.messageText2}>Modern | Fresh | Elegant</Text>
@@ -126,7 +120,7 @@ export default function HomeScreen() {
         </Pressable>
       </ImageBackground>
 
-      {/* 🔐 Login Prompt */}
+      {/* Login Prompt */}
       {!user && (
         <View style={styles.loginPrompt}>
           <Text style={styles.loginPromptText}>
@@ -141,7 +135,7 @@ export default function HomeScreen() {
         </View>
       )}
 
-      {/* 🍽 Popular Dishes */}
+      {/* Popular Dishes */}
       <Text style={styles.popularDishesText}>
         <Text style={{ color: "#FB5800" }}>★</Text> Popular Dishes
       </Text>
@@ -177,16 +171,16 @@ export default function HomeScreen() {
   );
 }
 
-/* 🎨 Styles */
+/*  Styles */
 const styles = StyleSheet.create({
   titleContainer: {
-    marginTop: 60,
+  
     backgroundColor: "#fff",
     flex: 1,
   },
   imageBackground: {
-    height: 250,
-    marginTop: -5,
+    height: 400,
+    
     justifyContent: "center",
   },
   overlay: {
@@ -262,7 +256,7 @@ const styles = StyleSheet.create({
     padding: 10,
     width: 170,
     marginRight: 10,
-    elevation: 5,
+    elevation: 6,
   },
   popularDishImage: {
     width: "100%",
