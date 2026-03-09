@@ -1,38 +1,42 @@
 import { Router, Request, Response } from "express";
-import { pool } from "../db";
+import { admin } from "../firebase";
+import { supabase } from "../db";
 
 const router = Router();
 
-// GET /items
+//  GET /items
 router.get("/", async (_req: Request, res: Response) => {
   try {
-    const result = await pool.query(
-      "SELECT * FROM items ORDER BY created_at DESC"
-    );
-    res.json(result.rows);
-  } catch (error) {
+    const { data, error } = await supabase
+      .from("items")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
+  } catch (error: any) {
     res.status(500).json({ error: "Failed to fetch items" });
   }
 });
 
-// GET /items/:id
+//  GET /items/:id
 router.get("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    const result = await pool.query(
-      "SELECT * FROM items WHERE id = $1",
-      [id]
-    );
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Item not found" });
-    }
-    res.json(result.rows[0]);
-  } catch (error) {
+    const { data, error } = await supabase
+      .from("items")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) return res.status(404).json({ error: "Item not found" });
+    res.json(data);
+  } catch (error: any) {
     res.status(500).json({ error: "Failed to fetch item" });
   }
 });
 
-// POST /items
+//  POST /items
 router.post("/", async (req: Request, res: Response) => {
   const { name, price, description, image_url, category } = req.body;
 
@@ -43,63 +47,54 @@ router.post("/", async (req: Request, res: Response) => {
   }
 
   try {
-    const result = await pool.query(
-      `INSERT INTO items (name, price, description, image_url, category)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING *`,
-      [name, price, description, image_url, category]
-    );
+    const { data, error } = await supabase
+      .from("items")
+      .insert([{ name, price, description, image_url, category }])
+      .select()
+      .single();
 
-    res.status(201).json(result.rows[0]);
-  } catch (error) {
+    if (error) return res.status(500).json({ error: error.message });
+    res.status(201).json(data);
+  } catch (error: any) {
     res.status(500).json({ error: "Failed to create item" });
   }
 });
 
-// PUT /items/:id
+//  PUT /items/:id
 router.put("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
   const { name, price, description, image_url, category } = req.body;
 
   try {
-    const result = await pool.query(
-      `UPDATE items
-       SET name = $1,
-           price = $2,
-           description = $3,
-           image_url = $4,
-           category = $5
-       WHERE id = $6
-       RETURNING *`,
-      [name, price, description, image_url, category, id]
-    );
+    const { data, error } = await supabase
+      .from("items")
+      .update({ name, price, description, image_url, category })
+      .eq("id", id)
+      .select()
+      .single();
 
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Item not found" });
-    }
-
-    res.json(result.rows[0]);
-  } catch (error) {
+    if (error) return res.status(404).json({ error: "Item not found" });
+    res.json(data);
+  } catch (error: any) {
     res.status(500).json({ error: "Failed to update item" });
   }
 });
 
-// DELETE /items/:id
+//  DELETE /items/:id
 router.delete("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    const result = await pool.query(
-      "DELETE FROM items WHERE id = $1 RETURNING *",
-      [id]
-    );
+    const { data, error } = await supabase
+      .from("items")
+      .delete()
+      .eq("id", id)
+      .select()
+      .single();
 
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Item not found" });
-    }
-
-    res.json({ message: "Item deleted successfully" });
-  } catch (error) {
+    if (error) return res.status(404).json({ error: "Item not found" });
+    res.json({ message: "Item deleted successfully", deleted: data });
+  } catch (error: any) {
     res.status(500).json({ error: "Failed to delete item" });
   }
 });

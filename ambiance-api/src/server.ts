@@ -1,7 +1,10 @@
-import express from "express";
 import cors from "cors";
-import itemsRoutes from "./routes/items";
+import dotenv from "dotenv";
+import express from "express";
 import cartRoutes from "./routes/cart";
+import itemsRoutes from "./routes/items";
+
+dotenv.config();
 
 
 const app = express();
