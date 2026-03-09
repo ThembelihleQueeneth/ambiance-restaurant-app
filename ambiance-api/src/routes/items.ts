@@ -3,7 +3,7 @@ import pool from "../db"; // <-- import your Pool here
 
 const router = Router();
 
-// ✅ GET /items
+//  GET /items
 router.get("/", async (_req: Request, res: Response) => {
   try {
     const result = await pool.query(
@@ -15,7 +15,7 @@ router.get("/", async (_req: Request, res: Response) => {
   }
 });
 
-// ✅ GET /items/:id
+//  GET /items/:id
 router.get("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
@@ -29,7 +29,7 @@ router.get("/:id", async (req: Request, res: Response) => {
   }
 });
 
-// ✅ POST /items
+//  POST /items
 router.post("/", async (req: Request, res: Response) => {
   const { name, price, description, image_url, category } = req.body;
 
@@ -52,7 +52,7 @@ router.post("/", async (req: Request, res: Response) => {
   }
 });
 
-// ✅ PUT /items/:id
+//  PUT /items/:id
 router.put("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
   const { name, price, description, image_url, category } = req.body;
@@ -80,7 +80,7 @@ router.put("/:id", async (req: Request, res: Response) => {
   }
 });
 
-// ✅ DELETE /items/:id
+//  DELETE /items/:id
 router.delete("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
 
