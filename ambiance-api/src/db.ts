@@ -1,20 +1,36 @@
-// import { Pool } from "pg";
+import { Pool } from "pg";
+import dotenv from "dotenv";
 
-// export const pool = new Pool(
-//   process.env.DATABASE_URL
-//     ? { connectionString: process.env.DATABASE_URL }
-//     : {
-//       user: "postgres",
-//       host: "localhost",
-//       database: "ambiance_db",
-//       password: "12345",
-//       port: 5432,
-//     }
-// );
-// db.ts
-import { createClient } from "@supabase/supabase-js";
+dotenv.config();
 
-export const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_KEY! // service role key
+const requiredEnvVars = [
+  "POSTGRES_HOST",
+  "POSTGRES_PORT",
+  "POSTGRES_DATABASE",
+  "POSTGRES_USER",
+  "POSTGRES_PASSWORD",
+];
+
+const missingEnvVars = requiredEnvVars.filter(
+  (varName) => !process.env[varName]
 );
+
+if (missingEnvVars.length > 0) {
+  console.error(
+    `Missing required environment variables: ${missingEnvVars.join(", ")}`
+  );
+  process.exit(1);
+}
+
+const pool = new Pool({
+  host: process.env.POSTGRES_HOST,
+  port: Number(process.env.POSTGRES_PORT) || 5432,
+  user: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+  database: process.env.POSTGRES_DATABASE,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
+
+export default pool;
