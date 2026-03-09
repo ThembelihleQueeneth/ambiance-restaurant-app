@@ -1,27 +1,32 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  Pressable,
-  ScrollView,
-  ActivityIndicator,
-  Alert,
-} from "react-native";
-import React, { useState } from "react";
-import { useRouter } from "expo-router";
-import { signInWithEmailAndPassword } from "firebase/auth";
 import Header from "@/components/Header";
 import { FIREBASE_AUTH } from "@/services/firebase/FirebaseConfig";
 import { useAuthStore } from "@/src/store/AuthStore";
+import { useRouter } from "expo-router";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 
 export default function Account() {
   const router = useRouter();
-  const setUser = useAuthStore((state) => state.setUser); // ← get setter
+  const { user, setUser, logout } = useAuthStore();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    router.replace("/(tabs)");
+  };
 
   const signIn = async () => {
     if (!email || !password) {
@@ -63,43 +68,59 @@ export default function Account() {
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.loginTitle}>Log In</Text>
+        {user ? (
+          <View style={styles.profileContainer}>
+            <Text style={styles.loginTitle}>My Account</Text>
+            <View style={styles.profileCard}>
+              <Text style={styles.profileEmail}>{user.email}</Text>
+              <Text style={styles.profileStatus}>Status: Authenticated</Text>
+            </View>
 
-        <View style={styles.formContainer}>
-          <Text style={styles.label}>Email Address</Text>
-          <TextInput
-            style={styles.inputText}
-            placeholder="Enter email here"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            value={email}
-            onChangeText={setEmail}
-          />
-
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.inputText}
-            placeholder="Enter your password here"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
-
-          {loading ? (
-            <ActivityIndicator size="large" color="#FB8500" />
-          ) : (
-            <Pressable style={styles.loginBtn} onPress={signIn}>
-              <Text style={styles.loginBtnText}>Log In</Text>
-            </Pressable>
-          )}
-
-          <View style={styles.signUpContainer}>
-            <Text style={styles.noAccountText}>Do not have an account?</Text>
-            <Pressable onPress={() => router.push('../Screens/Register')}>
-              <Text style={styles.signUpText}> Sign Up</Text>
+            <Pressable style={styles.logoutBtn} onPress={handleLogout}>
+              <Text style={styles.loginBtnText}>Log Out</Text>
             </Pressable>
           </View>
-        </View>
+        ) : (
+          <View>
+            <Text style={styles.loginTitle}>Log In</Text>
+
+            <View style={styles.formContainer}>
+              <Text style={styles.label}>Email Address</Text>
+              <TextInput
+                style={styles.inputText}
+                placeholder="Enter email here"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail}
+              />
+
+              <Text style={styles.label}>Password</Text>
+              <TextInput
+                style={styles.inputText}
+                placeholder="Enter your password here"
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+              />
+
+              {loading ? (
+                <ActivityIndicator size="large" color="#FB8500" />
+              ) : (
+                <Pressable style={styles.loginBtn} onPress={signIn}>
+                  <Text style={styles.loginBtnText}>Log In</Text>
+                </Pressable>
+              )}
+
+              <View style={styles.signUpContainer}>
+                <Text style={styles.noAccountText}>Do not have an account?</Text>
+                <Pressable onPress={() => router.push('/Screens/Register')}>
+                  <Text style={styles.signUpText}> Sign Up</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        )}
       </ScrollView>
     </View>
   );
@@ -166,5 +187,32 @@ const styles = StyleSheet.create({
     color: "#FB8500",
     fontSize: 14,
     fontWeight: "bold",
+  },
+  profileContainer: {
+    width: "100%",
+  },
+  profileCard: {
+    backgroundColor: "#f9f9f9",
+    padding: 20,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#eee",
+    marginBottom: 30,
+  },
+  profileEmail: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#1A1A1A",
+    marginBottom: 5,
+  },
+  profileStatus: {
+    fontSize: 14,
+    color: "#777",
+  },
+  logoutBtn: {
+    backgroundColor: "#ff4d4d",
+    paddingVertical: 15,
+    borderRadius: 14,
+    alignItems: "center",
   },
 });

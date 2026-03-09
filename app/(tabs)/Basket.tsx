@@ -1,17 +1,18 @@
 import Header from "@/components/Header";
+import api from "@/services/api";
+import { useAuthStore } from "@/src/store/AuthStore";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import {
-  StyleSheet,
-  Text,
+  Alert,
   Image,
-  View,
   Pressable,
   ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
-import { useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { FIREBASE_AUTH } from "@/services/firebase/FirebaseConfig";
-import { useCart } from "@/context/CartContext";
-import { useRouter } from "expo-router";
 
 type CartItem = {
   id: number;
@@ -22,11 +23,10 @@ type CartItem = {
 };
 
 export default function Basket() {
-  const user = FIREBASE_AUTH.currentUser;
-  const { setCount } = useCart();
+  const user = useAuthStore((state) => state.user);
   const router = useRouter();
-
   const [items, setItems] = useState<CartItem[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchCart();
@@ -34,36 +34,35 @@ export default function Basket() {
 
   const fetchCart = async () => {
     if (!user) return;
-
-    const res = await fetch(
-      `http://192.168.1.112:5000/cart/${user.uid}`
-    );
-    const data: CartItem[] = await res.json();
-
-    setItems(data);
-
-    const totalQty = data.reduce((sum, i) => sum + i.quantity, 0);
-    setCount(totalQty);
+    try {
+      setLoading(true);
+      const res = await api.get(`/cart/${user.uid}`);
+      setItems(res.data);
+    } catch (error) {
+      console.log("Failed to fetch cart", error);
+      Alert.alert("Error", "Could not load cart items");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const updateQuantity = async (id: number, quantity: number) => {
     if (quantity < 1) return;
-
-    await fetch(`http://192.168.1.112:5000/cart/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ quantity }),
-    });
-
-    fetchCart();
+    try {
+      await api.put(`/cart/${id}`, { quantity });
+      fetchCart();
+    } catch (error) {
+      console.log("Failed to update quantity", error);
+    }
   };
 
   const removeItem = async (id: number) => {
-    await fetch(`http://192.168.1.112:5000/cart/${id}`, {
-      method: "DELETE",
-    });
-
-    fetchCart();
+    try {
+      await api.delete(`/cart/${id}`);
+      fetchCart();
+    } catch (error) {
+      console.log("Failed to remove item", error);
+    }
   };
 
   const total = items.reduce(

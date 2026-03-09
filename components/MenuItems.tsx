@@ -1,6 +1,8 @@
-import { View, Text, StyleSheet, Image, Pressable, ScrollView } from "react-native";
-import { useState, useEffect } from "react";
-// import api from "@/services/api"; // Make sure this points to your backend
+import api from "@/services/api";
+import { useAuthStore } from "@/src/store/AuthStore";
+import { useCartStore } from "@/src/store/CartStore";
+import { useEffect, useState } from "react";
+import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 type Item = {
   id: number;
@@ -18,6 +20,9 @@ type Props = {
 export default function MenuItems({ selectedCategory }: Props) {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const user = useAuthStore((state) => state.user);
+  const addToCart = useCartStore((state) => state.addToCart);
 
   useEffect(() => {
     fetchItems();
@@ -38,6 +43,23 @@ export default function MenuItems({ selectedCategory }: Props) {
     }
   };
 
+  const handleAddToBasket = (item: Item) => {
+    if (!user) {
+      Alert.alert("Login required", "Please log in to add items");
+      return;
+    }
+
+    addToCart({
+      id: item.id.toString(),
+      name: item.name,
+      price: item.price,
+      image_url: item.image_url.toString(),
+      quantity: 1,
+    });
+
+    Alert.alert("Added to Basket", `${item.name} added successfully`);
+  };
+
   if (loading) return <Text style={{ padding: 20 }}>Loading...</Text>;
 
   return (
@@ -55,7 +77,10 @@ export default function MenuItems({ selectedCategory }: Props) {
                 <Text style={styles.priceText}>R{item.price}</Text>
               </View>
 
-              <Pressable style={styles.addButton}>
+              <Pressable
+                style={styles.addButton}
+                onPress={() => handleAddToBasket(item)}
+              >
                 <Text style={styles.addButtonText}>+</Text>
               </Pressable>
             </View>

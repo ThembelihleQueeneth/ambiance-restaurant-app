@@ -1,5 +1,5 @@
-import { View, Image, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { useState } from "react";
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 type Category = {
   id: string | number;
@@ -50,10 +50,15 @@ const styles = StyleSheet.create({
 
 export default function FoodCategories({ selectedCategory, setSelectedCategory }: Props) {
   const categories: Category[] = [
-    // Add your categories here
-    // Example: { id: 1, title: "Pizza", image: require("...") }
+    { id: 1, title: "Starters", image: require("@/assets/images/starters.jpg") },
+    { id: 2, title: "Main Course", image: require("@/assets/images/main-course.jpg") },
+    { id: 3, title: "Desserts", image: require("@/assets/images/dessert.jpg") },
+    { id: 4, title: "Salads", image: require("@/assets/images/salad.jpg") },
+    { id: 5, title: "Drinks", image: require("@/assets/images/drinks.jpg") },
+    { id: 6, title: "Pasta", image: require("@/assets/images/pasta.jpg") },
   ];
-  const [activeIndex, setActiveIndex] = useState(0);
+  const initialIndex = categories.findIndex(c => c.title === selectedCategory);
+  const [activeIndex, setActiveIndex] = useState(initialIndex !== -1 ? initialIndex : 0);
 
   const handlePress = (index: number) => {
     setActiveIndex(index);

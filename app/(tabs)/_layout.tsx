@@ -1,5 +1,4 @@
 import { Tabs } from "expo-router";
-import React from "react";
 
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
@@ -29,7 +28,7 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="food_menu"
+        name="Menu"
         options={{
           title: "Menu",
           tabBarIcon: ({ color }) => (
@@ -39,7 +38,7 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="basket"
+        name="Basket"
         options={{
           title: "Basket",
           tabBarIcon: ({ color }) => (
@@ -49,7 +48,7 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="account"
+        name="Account"
         options={{
           title: "Account",
           tabBarIcon: ({ color }) => (

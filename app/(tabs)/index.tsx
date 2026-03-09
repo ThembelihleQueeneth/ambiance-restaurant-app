@@ -1,22 +1,23 @@
+import { useRouter } from "expo-router";
+import { onAuthStateChanged } from "firebase/auth";
+import { useEffect, useState } from "react";
 import {
-  View,
-  StyleSheet,
-  ImageBackground,
-  Text,
-  Image,
-  Pressable,
+  ActivityIndicator,
   Alert,
   FlatList,
-  ActivityIndicator,
+  Image,
+  ImageBackground,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
-import { useEffect, useState } from "react";
-import { useRouter } from "expo-router";
-import { onAuthStateChanged, User } from "firebase/auth";
 
-import Header from "../../components/Header";
+import api from "@/services/api";
 import { FIREBASE_AUTH } from "@/services/firebase/FirebaseConfig";
 import { useAuthStore } from "@/src/store/AuthStore";
-import { useCartStore} from "@/src/store/CartStore";
+import { useCartStore } from "@/src/store/CartStore";
+import Header from "../../components/Header";
 
 /* TYPES */
 type MenuItem = {
@@ -58,13 +59,9 @@ export default function HomeScreen() {
     try {
       setLoading(true);
 
-      const response = await fetch("http://192.168.1.111:5000/items");
+      const response = await api.get("/items");
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch menu items");
-      }
-
-      const data: MenuItem[] = await response.json();
+      const data: MenuItem[] = response.data;
       setMenuItems(data);
     } catch (error) {
       console.error(error);
@@ -174,13 +171,13 @@ export default function HomeScreen() {
 /*  Styles */
 const styles = StyleSheet.create({
   titleContainer: {
-  
+
     backgroundColor: "#fff",
     flex: 1,
   },
   imageBackground: {
     height: 400,
-    
+
     justifyContent: "center",
   },
   overlay: {
