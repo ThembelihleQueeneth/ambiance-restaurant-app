@@ -3,6 +3,9 @@ import dotenv from "dotenv";
 import express from "express";
 import cartRoutes from "./routes/cart";
 import itemsRoutes from "./routes/items";
+import ordersRouter from "./routes/orders";
+import paymentsRouter from "./routes/payments";
+import reviewsRouter from "./routes/reviews";
 
 dotenv.config();
 
@@ -18,7 +21,9 @@ app.get("/", (_req, res) => {
 
 app.use("/items", itemsRoutes);
 app.use("/cart", cartRoutes);
-
+app.use("/orders", ordersRouter);
+app.use("/payments", paymentsRouter);
+app.use("/reviews", reviewsRouter);
 
 const PORT = 5000;
 app.listen(PORT, () => {
