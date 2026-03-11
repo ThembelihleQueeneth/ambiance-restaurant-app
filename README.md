@@ -109,7 +109,7 @@ PORT=5000
 
 ---
 ## Admin Dashboard Github Link
-*`https://github.com/ThembelihleQueeneth/ambiance_cms.git`
+* `https://github.com/ThembelihleQueeneth/ambiance_cms.git`
 
 ## 👤 Author
 
