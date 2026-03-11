@@ -74,69 +74,78 @@ export default function Basket() {
     <View style={styles.container}>
       <Header />
 
-      <ScrollView contentContainerStyle={styles.itemsContainer}>
-        {items.map((item) => (
-          <View key={item.id} style={styles.itemCard}>
-            <View style={styles.itemDetails}>
-              <Text style={styles.itemName}>{item.name}</Text>
+      {items.length === 0 && !loading ? (
+        <View style={styles.emptyContainer}>
+          <Icon name="shopping-basket" size={64} color="#ddd" />
+          <Text style={styles.emptyText}>Your basket is empty</Text>
+          <Pressable
+            style={styles.browseBtn}
+            onPress={() => router.push("/(tabs)/Menu")}
+          >
+            <Text style={styles.browseText}>Browse Menu</Text>
+          </Pressable>
+        </View>
+      ) : (
+        <>
+          <ScrollView contentContainerStyle={styles.itemsContainer}>
+            {items.map((item) => (
+              <View key={item.id} style={styles.itemCard}>
+                <View style={styles.itemDetails}>
+                  <Text style={styles.itemName}>{item.name}</Text>
 
-              <View style={styles.quantityContainer}>
-                <Pressable
-                  style={styles.quantityBtn}
-                  onPress={() =>
-                    updateQuantity(item.id, item.quantity - 1)
-                  }
-                >
-                  <Text style={styles.quantityText}>-</Text>
-                </Pressable>
+                  <View style={styles.quantityContainer}>
+                    <Pressable
+                      style={styles.quantityBtn}
+                      onPress={() => updateQuantity(item.id, item.quantity - 1)}
+                    >
+                      <Text style={styles.quantityText}>-</Text>
+                    </Pressable>
 
-                <Text style={styles.quantityNumber}>{item.quantity}</Text>
+                    <Text style={styles.quantityNumber}>{item.quantity}</Text>
 
-                <Pressable
-                  style={styles.quantityBtn}
-                  onPress={() =>
-                    updateQuantity(item.id, item.quantity + 1)
-                  }
-                >
-                  <Text style={styles.quantityText}>+</Text>
-                </Pressable>
+                    <Pressable
+                      style={styles.quantityBtn}
+                      onPress={() => updateQuantity(item.id, item.quantity + 1)}
+                    >
+                      <Text style={styles.quantityText}>+</Text>
+                    </Pressable>
 
-                <Pressable
-                  style={styles.quantityBtn}
-                  onPress={() => removeItem(item.id)}
-                >
-                  <Icon name="trash" size={16} color="#fff" />
-                </Pressable>
+                    <Pressable
+                      style={styles.quantityBtn}
+                      onPress={() => removeItem(item.id)}
+                    >
+                      <Icon name="trash" size={16} color="#fff" />
+                    </Pressable>
+                  </View>
+
+                  <Text style={styles.itemPrice}>
+                    R{item.price * item.quantity}
+                  </Text>
+                </View>
+
+                <Image
+                  source={{ uri: item.image_url }}
+                  style={styles.itemImage}
+                />
               </View>
+            ))}
+          </ScrollView>
 
-              <Text style={styles.itemPrice}>
-                R{item.price * item.quantity}
-              </Text>
-            </View>
-
-            <Image
-              source={{ uri: item.image_url }}
-              style={styles.itemImage}
-            />
+          {/* Total */}
+          <View style={styles.totalPriceContainer}>
+            <Text style={styles.totalText}>Total:</Text>
+            <Text style={styles.totalAmount}>R{total}</Text>
           </View>
-        ))}
-      </ScrollView>
 
-      {/* Total */}
-      <View style={styles.totalPriceContainer}>
-        <Text style={styles.totalText}>Total:</Text>
-        <Text style={styles.totalAmount}>R{total}</Text>
-      </View>
-
-      {/* Checkout Button */}
-      <Pressable
-        style={checkoutStyles.checkoutBtn}
-        onPress={() => router.push("/Screens/Checkout")}
-      >
-        <Text style={checkoutStyles.checkoutText}>
-          Proceed to Checkout
-        </Text>
-      </Pressable>
+          {/* Checkout Button */}
+          <Pressable
+            style={checkoutStyles.checkoutBtn}
+            onPress={() => router.push("/Screens/Checkout")}
+          >
+            <Text style={checkoutStyles.checkoutText}>Proceed to Checkout</Text>
+          </Pressable>
+        </>
+      )}
     </View>
   );
 }
@@ -145,6 +154,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyText: {
+    fontSize: 18,
+    color: "#666",
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  browseBtn: {
+    backgroundColor: "#FB8500",
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  browseText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   itemsContainer: {
     padding: 16,

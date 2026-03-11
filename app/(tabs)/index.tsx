@@ -8,9 +8,11 @@ import {
   Image,
   ImageBackground,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
+  RefreshControl,
 } from "react-native";
 
 import api from "@/services/api";
@@ -40,6 +42,7 @@ export default function HomeScreen() {
 
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   /* Listen to Firebase auth changes */
   useEffect(() => {
@@ -71,6 +74,12 @@ export default function HomeScreen() {
     }
   };
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchMenuItems();
+    setRefreshing(false);
+  };
+
   /*  ADD TO CART */
   const handleAddToBasket = (item: MenuItem) => {
     if (!user) {
@@ -98,7 +107,13 @@ export default function HomeScreen() {
   }
 
   return (
-    <View style={styles.titleContainer}>
+    <ScrollView 
+      style={styles.titleContainer}
+      contentContainerStyle={{ flexGrow: 1 }}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       {/* Hero Section */}
       <ImageBackground
         source={require("@/assets/images/ambiance-bg.jpg")}
@@ -106,15 +121,18 @@ export default function HomeScreen() {
       >
         <Header />
         <View style={styles.overlay} />
-        <Text style={styles.messageText1}>Welcome to Ambiance</Text>
-        <Text style={styles.messageText2}>Modern | Fresh | Elegant</Text>
+        
+        <View style={styles.heroContent}>
+          <Text style={styles.messageText1}>Welcome to Ambiance</Text>
+          <Text style={styles.messageText2}>Modern | Fresh | Elegant</Text>
 
-        <Pressable
-          style={styles.exploreButton}
-          onPress={() => router.push("/(tabs)/Menu")}
-        >
-          <Text style={styles.exploreButtonText}>Explore Menu</Text>
-        </Pressable>
+          <Pressable
+            style={styles.exploreButton}
+            onPress={() => router.push("/(tabs)/Menu")}
+          >
+            <Text style={styles.exploreButtonText}>Explore Menu</Text>
+          </Pressable>
+        </View>
       </ImageBackground>
 
       {/* Login Prompt */}
@@ -142,7 +160,7 @@ export default function HomeScreen() {
         keyExtractor={(item) => item.id.toString()}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 10 }}
+        contentContainerStyle={{ paddingHorizontal: 10, paddingBottom: 20 }}
         renderItem={({ item }) => (
           <View style={styles.popularDishCont}>
             <Image
@@ -164,7 +182,7 @@ export default function HomeScreen() {
           </View>
         )}
       />
-    </View>
+    </ScrollView>
   );
 }
 
@@ -184,17 +202,24 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(0, 0, 0, 0.45)",
   },
+  heroContent: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40,
+    paddingHorizontal: 20,
+  },
   messageText1: {
     color: "#fff",
     fontSize: 32,
     fontWeight: "bold",
-    marginLeft: 30,
+    textAlign: "center",
   },
   messageText2: {
     color: "#fff",
     fontSize: 20,
-    marginLeft: 90,
+    textAlign: "center",
     marginBottom: 10,
+    marginTop: 5,
   },
   exploreButton: {
     backgroundColor: "#FB8500",
@@ -203,7 +228,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 20,
-    marginLeft: 100,
     marginTop: 10,
   },
   exploreButtonText: {

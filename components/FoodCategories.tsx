@@ -13,38 +13,49 @@ type Props = {
 };
 
 const styles = StyleSheet.create({
+  containerWrapper: {
+    height: 120, // Give it a fixed height so scale transforms don't cause layout jumps
+  },
   container: {
     paddingHorizontal: 10,
-  },
-  categoryItem: {
-    marginHorizontal: 8,
     alignItems: "center",
   },
+  categoryItem: {
+    marginHorizontal: 10,
+    alignItems: "center",
+    justifyContent: "flex-start",
+  },
   activeCategoryItem: {
-    opacity: 1,
+    transform: [{ scale: 1.05 }],
   },
   categoryImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 66,
+    height: 66,
+    borderRadius: 33,
+  },
+  imageContainer: {
+    padding: 3,
+    borderRadius: 40,
+  },
+  activeImageContainer: {
+    borderWidth: 2,
+    borderColor: "#FB8500",
   },
   labelContainer: {
     marginTop: 8,
   },
   activeLabelContainer: {
-    backgroundColor: "#f0f0f0",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
+    // Optional additional styles
   },
   categoryText: {
-    fontSize: 12,
+    fontSize: 13,
     color: "#666",
+    fontWeight: "500",
   },
   activeCategoryText: {
-    fontSize: 12,
-    fontWeight: "bold",
-    color: "#000",
+    fontSize: 13,
+    fontWeight: "800",
+    color: "#FB8500",
   },
 });
 
@@ -66,18 +77,24 @@ export default function FoodCategories({ selectedCategory, setSelectedCategory }
   };
 
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.container}>
-      {categories.map((cat: Category, index: number) => {
-        const isActive = index === activeIndex;
-        return (
-          <Pressable key={cat.id} onPress={() => handlePress(index)} style={[styles.categoryItem, isActive && styles.activeCategoryItem]}>
-            <Image style={styles.categoryImage} source={cat.image} />
-            <View style={[styles.labelContainer, isActive && styles.activeLabelContainer]}>
-              <Text style={[styles.categoryText, isActive && styles.activeCategoryText]}>{cat.title}</Text>
-            </View>
-          </Pressable>
-        );
-      })}
-    </ScrollView>
+    <View style={styles.containerWrapper}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.container}>
+        {categories.map((cat: Category, index: number) => {
+          const isActive = index === activeIndex;
+          return (
+            <Pressable key={cat.id} onPress={() => handlePress(index)} style={[styles.categoryItem, isActive && styles.activeCategoryItem]}>
+              
+              <View style={[styles.imageContainer, isActive && styles.activeImageContainer]}>
+                <Image style={styles.categoryImage} source={cat.image} />
+              </View>
+
+              <View style={[styles.labelContainer, isActive && styles.activeLabelContainer]}>
+                <Text style={[styles.categoryText, isActive && styles.activeCategoryText]}>{cat.title}</Text>
+              </View>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+    </View>
   );
 }

@@ -23,13 +23,20 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#F9F9F9",
     marginHorizontal: 16,
-    marginTop: 15, 
-    borderRadius: 18,
-    paddingHorizontal: 14,
+    marginTop: 20, 
+    marginBottom: 10,
+    borderRadius: 24,
+    paddingHorizontal: 18,
     height: 56,
-    elevation: 6,
+    borderWidth: 1,
+    borderColor: "#EBEBEB",
+    shadowColor: "#000",
+    shadowOpacity: 0.03,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 8,
+    elevation: 2,
   },
 
   icon: {
@@ -41,5 +48,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
     paddingVertical: 0, 
+    fontWeight: "500",
   },
 });

@@ -6,10 +6,12 @@ import {
   Pressable,
   ScrollView,
   ActivityIndicator,
-  Alert,
 } from "react-native";
 import { useState } from "react";
 import Header from "@/components/Header";
+import Toast from "react-native-toast-message";
+import { useCartStore } from "@/src/store/CartStore";
+import { useRouter } from "expo-router";
 
 export default function Checkout() {
   const [address, setAddress] = useState("");
@@ -19,9 +21,21 @@ export default function Checkout() {
   const [cvv, setCvv] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const cart = useCartStore((state) => state.cart);
+  const clearCart = useCartStore((state) => state.clearCart);
+  const router = useRouter();
+
+  const cartTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
   const handlePayment = () => {
     if (!address || !accountNumber || !expDate || !cvv) {
-      Alert.alert("Missing Information", "Please fill in all required fields.");
+      Toast.show({
+        type: "error",
+        text1: "Missing Information",
+        text2: "Please fill in all required fields.",
+        position: "top",
+        topOffset: 60,
+      });
       return;
     }
 
@@ -29,7 +43,15 @@ export default function Checkout() {
 
     setTimeout(() => {
       setLoading(false);
-      Alert.alert("Payment Successful", "Your order has been placed 🎉");
+      clearCart();
+      Toast.show({
+        type: "success",
+        text1: "Payment Successful",
+        text2: "Your order has been placed 🎉",
+        position: "top",
+        topOffset: 60,
+      });
+      setTimeout(() => router.push("/"), 2000);
     }, 2000);
   };
 
@@ -41,7 +63,12 @@ export default function Checkout() {
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.title}>Checkout</Text>
+        <Text style={styles.title}>Secure Checkout</Text>
+
+        <View style={styles.orderSummary}>
+          <Text style={styles.summaryLabel}>Total Amount</Text>
+          <Text style={styles.summaryTotal}>R{cartTotal.toFixed(2)}</Text>
+        </View>
 
         {/* Delivery Info */}
         <View style={styles.card}>
@@ -126,25 +153,53 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   title: {
+    fontSize: 28,
+    fontWeight: "800",
+    marginBottom: 20,
+    color: "#222",
+  },
+  orderSummary: {
+    backgroundColor: "#1A1A1A",
+    borderRadius: 16,
+    padding: 24,
+    marginBottom: 24,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 10,
+    elevation: 5,
+  },
+  summaryLabel: {
+    color: "#aaa",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  summaryTotal: {
+    color: "#fff",
     fontSize: 26,
     fontWeight: "bold",
-    marginBottom: 20,
   },
   card: {
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#fff",
     borderRadius: 16,
-    padding: 16,
+    padding: 20,
     marginBottom: 20,
     shadowColor: "#000",
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 2,
+    shadowRadius: 8,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: "#f0f0f0",
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 12,
+    fontWeight: "700",
+    marginBottom: 16,
+    color: "#333",
   },
   label: {
     fontSize: 14,
@@ -161,23 +216,29 @@ const styles = StyleSheet.create({
     borderColor: "#ddd",
   },
   textArea: {
-    height: 80,
+    height: 100,
     textAlignVertical: "top",
+    paddingTop: 12,
   },
   row: {
     flexDirection: "row",
   },
   payBtn: {
     backgroundColor: "#FB8500",
-    height: 56,
+    height: 60,
     borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
     marginTop: 10,
+    shadowColor: "#FB8500",
+    shadowOpacity: 0.4,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 10,
+    elevation: 5,
   },
   payBtnText: {
     color: "#fff",
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
   },
 });
