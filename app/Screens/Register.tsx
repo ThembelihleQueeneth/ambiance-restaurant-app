@@ -14,6 +14,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 
 import Header from "@/components/Header";
 import { FIREBASE_AUTH } from "@/services/firebase/FirebaseConfig";
+import api from "@/services/api";
 
 export default function Register() {
   const router = useRouter();
@@ -61,7 +62,20 @@ export default function Register() {
         password
       );
 
-      console.log("User registered:", response.user.uid);
+      const user = response.user;
+      console.log("User registered in Firebase:", user.uid);
+
+      // Save user to the backend database
+      await api.post("/users", {
+        id: user.uid,
+        email: user.email,
+        name: firstName,
+        surname: lastName,
+        cellnumber: phone,
+        role: "customer",
+      });
+
+      console.log("User saved to backend database:", user.uid);
 
       Alert.alert("Success", "Account created successfully");
 
