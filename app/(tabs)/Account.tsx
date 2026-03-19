@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import LogoutModal from "@/components/LogoutModal";
 import { FIREBASE_AUTH } from "@/services/firebase/FirebaseConfig";
 import { useAuthStore } from "@/src/store/AuthStore";
 import { useRouter } from "expo-router";
@@ -22,9 +23,11 @@ export default function Account() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogout = () => {
     logout();
+    setShowLogoutModal(false);
     router.replace("/(tabs)");
   };
 
@@ -64,6 +67,12 @@ export default function Account() {
     <View style={styles.container}>
       <Header />
 
+      <LogoutModal
+        visible={showLogoutModal}
+        onCancel={() => setShowLogoutModal(false)}
+        onConfirm={handleLogout}
+      />
+
       <ScrollView
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
@@ -76,7 +85,7 @@ export default function Account() {
               <Text style={styles.profileStatus}>Status: Authenticated</Text>
             </View>
 
-            <Pressable style={styles.logoutBtn} onPress={handleLogout}>
+            <Pressable style={styles.logoutBtn} onPress={() => setShowLogoutModal(true)}>
               <Text style={styles.loginBtnText}>Log Out</Text>
             </Pressable>
           </View>
