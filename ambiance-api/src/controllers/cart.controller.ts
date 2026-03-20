@@ -1,9 +1,10 @@
 import { Request, Response } from 'express'
 import * as service from '../services/cart.service'
 
-export const getCart = async (_req: Request, res: Response) => {
+export const getCart = async (req: Request, res: Response) => {
     try {
-        const data = await service.getCart()
+        const userId = req.params.userId as string
+        const data = await service.getCart(userId)
         res.json(data)
     } catch (error: any) {
         res.status(500).json({ error: error.message || error })

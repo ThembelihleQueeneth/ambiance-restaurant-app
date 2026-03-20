@@ -14,7 +14,7 @@ type Props = {
 
 const styles = StyleSheet.create({
   containerWrapper: {
-    height: 120, // Give it a fixed height so scale transforms don't cause layout jumps
+    height: 120, 
   },
   container: {
     paddingHorizontal: 10,
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   activeLabelContainer: {
-    // Optional additional styles
+   
   },
   categoryText: {
     fontSize: 13,

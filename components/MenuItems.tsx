@@ -59,21 +59,32 @@ export default function MenuItems({ selectedCategory }: Props) {
     }
   };
 
-  const handleAddToBasket = (item: Item) => {
+  const handleAddToBasket = async (item: Item) => {
     if (!user) {
       Alert.alert("Login required", "Please log in to add items");
       return;
     }
 
-    addToCart({
-      id: item.id.toString(),
-      name: item.name,
-      price: item.price,
-      image_url: item.image_url.toString(),
-      quantity: 1,
-    });
+    try {
+      await api.post("/cart", {
+        user_id: user.uid,
+        item_id: item.id,
+        quantity: 1,
+      });
 
-    Alert.alert("Added to Basket", `${item.name} added successfully`);
+      addToCart({
+        id: item.id.toString(),
+        name: item.name,
+        price: item.price,
+        image_url: item.image_url.toString(),
+        quantity: 1,
+      });
+
+      Alert.alert("Added to Basket", `${item.name} added successfully`);
+    } catch (error: any) {
+      console.error("Add to cart error:", error);
+      Alert.alert("Error", "Could not add item to basket.");
+    }
   };
 
   if (loading) {

@@ -1,8 +1,8 @@
 import Header from "@/components/Header";
 import api from "@/services/api";
 import { useAuthStore } from "@/src/store/AuthStore";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import {
   Alert,
   Image,
@@ -28,16 +28,28 @@ export default function Basket() {
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    fetchCart();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchCart();
+    }, [user])
+  );
 
   const fetchCart = async () => {
     if (!user) return;
     try {
       setLoading(true);
       const res = await api.get(`/cart/${user.uid}`);
-      setItems(res.data);
+      
+      // Map database format to UI format
+      const formattedItems = res.data.map((row: any) => ({
+        id: row.id, // This is the cart entry ID
+        name: row.items?.name || "Unknown Item",
+        price: row.items?.price || 0,
+        image_url: row.items?.image_url || "",
+        quantity: row.quantity
+      }));
+
+      setItems(formattedItems);
     } catch (error) {
       console.log("Failed to fetch cart", error);
       Alert.alert("Error", "Could not load cart items");

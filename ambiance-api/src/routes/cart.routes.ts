@@ -8,7 +8,7 @@ import {
 
 const router = Router()
 
-router.get('/', getCart)
+router.get('/:userId', getCart)
 router.post('/', createCart)
 router.put('/:id', updateCart)
 router.delete('/:id', deleteCart)
