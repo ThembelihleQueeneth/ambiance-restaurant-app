@@ -17,7 +17,7 @@ import {
 const { width } = Dimensions.get("window");
 
 type Item = {
-  id: number;
+  id: string;
   name: string;
   description: string;
   price: number;

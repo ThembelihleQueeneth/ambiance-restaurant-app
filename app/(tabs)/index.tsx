@@ -80,12 +80,9 @@ export default function HomeScreen() {
     }
 
     try {
-      // Ensure item_id is a number if your DB expects an integer
-      const itemId = Number(item.id);
-      
       await api.post("/cart", {
         user_id: user.uid,
-        item_id: itemId,
+        item_id: item.id,  // ✅ send as-is, it's already a uuid string
         quantity: 1,
       });
 
@@ -100,7 +97,7 @@ export default function HomeScreen() {
       Alert.alert("Success", `${item.name} added to basket`);
     } catch (error: any) {
       console.error("Cart Error Details:", error.response?.data || error.message);
-      Alert.alert("Error", "Could not add item to basket. Check if the 'cart' table exists in Supabase.");
+      Alert.alert("Error", "Could not add item to basket.");
     }
   };
 

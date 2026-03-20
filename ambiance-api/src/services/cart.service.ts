@@ -10,6 +10,7 @@ export const getCart = async (userId: string) => {
         .eq('user_id', userId)
 
     if (error) throw error
+
     return data
 }
 
