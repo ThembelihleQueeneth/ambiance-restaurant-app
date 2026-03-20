@@ -46,7 +46,6 @@ export default function Account() {
         password
       );
 
-      console.log("Logged in user:", response.user);
 
       // ← store user in Zustand
       setUser(response.user);

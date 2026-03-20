@@ -44,12 +44,16 @@ export default function MenuItems({ selectedCategory }: Props) {
     try {
       setLoading(true);
       const response = await api.get("/items");
-      const filtered = response.data.filter(
-        (item: Item) => item.category === selectedCategory
-      );
+      const filtered = response.data.filter((item: Item) => {
+        // Case-insensitive, whitespace-trimmed match so "Main Course" == "main course" etc.
+        const itemCat = (item.category ?? "").trim().toLowerCase();
+        const selected = selectedCategory.trim().toLowerCase();
+        return itemCat === selected;
+      });
       setItems(filtered);
-    } catch (error) {
-      console.log("Failed to fetch items", error);
+    } catch (error: any) {
+      console.error("Failed to fetch items:", error);
+      Alert.alert("Error", error?.message || "Failed to load menu items.");
     } finally {
       setLoading(false);
     }
@@ -112,6 +116,9 @@ export default function MenuItems({ selectedCategory }: Props) {
       columnWrapperStyle={styles.columnWrapper}
       ListHeaderComponent={
         <Text style={styles.MenuTitle}>{selectedCategory}</Text>
+      }
+      ListEmptyComponent={
+        <Text style={styles.emptyText}>No items found for "{selectedCategory}"</Text>
       }
     />
   );
@@ -191,5 +198,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginTop: -2,
+  },
+  emptyText: {
+    textAlign: "center",
+    color: "#999",
+    fontSize: 16,
+    marginTop: 40,
   },
 });
