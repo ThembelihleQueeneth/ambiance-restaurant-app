@@ -2,7 +2,6 @@
 
 Ambiance is a modern restaurant mobile application built with **React Native** and **TypeScript**, allowing users to browse menu items, add items to a basket, and place orders. It features a clean UI and a scalable backend architecture.
 
-![Home](https://github.com/user-attachments/assets/318fa95d-b7b7-4821-b773-3fe1bb6702dc)
 ----
 ##  Tech Stack
 
@@ -105,7 +104,13 @@ PORT=5000
 
 ##  Screenshots
 
-![Home](https://github.com/user-attachments/assets/26ab923f-e124-47d7-b6b5-f75f4de635f1)
+![s1](https://github.com/user-attachments/assets/7cb8f9a7-be58-40c4-826c-ce4b9ed8660c)
+![s2](https://github.com/user-attachments/assets/040f01f5-f4ab-4d9c-a7ef-51ae03ae0d25)
+![s3](https://github.com/user-attachments/assets/63d410ca-c81c-492d-b483-841e6cd7f680)
+![s4](https://github.com/user-attachments/assets/46031024-04ca-4de0-959f-9dc0ade5a771)
+![s5](https://github.com/user-attachments/assets/20361fb7-9f78-4378-b343-15e3cb930233)
+![s6](https://github.com/user-attachments/assets/812287aa-b451-4985-bbb5-fa4a985437fb)
+![s7](https://github.com/user-attachments/assets/bd700af3-b765-4b13-bd09-760c6c61a2d6)
 
 ---
 ## Admin Dashboard Github Link
