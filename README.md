@@ -115,7 +115,7 @@ PORT=5000
 ---
 ## Admin Dashboard Github Link
 * Github link: ``` https://github.com/ThembelihleQueeneth/ambiance_cms.git ```
-* Vercel link: ``` https://ambiance-cms.vercel.app/admin-login ```
+* Vercel link: ```https://ambiance-cms.vercel.app/admin-login ```
 
 ## 👤 Author
 
